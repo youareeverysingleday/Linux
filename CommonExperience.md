@@ -18,3 +18,8 @@
    2. sudo apt remove lightdm
    3. sudo apt autoremove
    4. sudo service lightdm stop
+4. 安装输入法
+   1. reference:<https://zhuanlan.zhihu.com/p/529892064>。
+5. ubuntu desktop 20.04需要依赖Python，不要删除python3。直接会导致gnome也被删除。建议安装其他版本的Python，然后将修改指向。
+   1. 参考:<https://zhuanlan.zhihu.com/p/403819436>。
+   2. 切换默认版本命令：sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.9
