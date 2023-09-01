@@ -22,7 +22,14 @@
    1. reference:<https://zhuanlan.zhihu.com/p/529892064>。
    2. 注意的地方：安装了输入法之后需要重启一次才能看到。
 
-### connect to Ubuntu by SSH from windows
+## Ubuntu system backup and restore
+
+使用timeshift进行备份和还原。参考<https://linuxconfig.org/ubuntu-20-04-system-backup-and-restore>。这个参考非常详细，步骤也非常明确。
+
+和上述参考相同的中文参考为：<https://blog.csdn.net/zjy1175044232/article/details/124248454>。
+
+
+### Connect to Ubuntu by SSH from windows
 
 reference: <https://linuxize.com/post/how-to-enable-ssh-on-ubuntu-20-04/>
 
@@ -60,11 +67,34 @@ reference: <https://linuxize.com/post/how-to-enable-ssh-on-ubuntu-20-04/>
 
 ### Install Python
 
-Reference 安装python参考:<https://blog.csdn.net/Hiking_Yu/article/details/104373221>。
+Reference 简要安装python参考:<https://blog.csdn.net/Hiking_Yu/article/details/104373221>。
+Reference 重要安装python参考:<https://zhuanlan.zhihu.com/p/403819436>。
 Reference 安装pip参考:<https://zhuanlan.zhihu.com/p/418368712>。
+
+安装了新的python版本之后，会出现的问题如下：
+1. gnome-terminal在桌面上已经无法打开了。但是通过SSH打开的命令行中Python和pip显示的内容又是完全正确。大概率是因为python的版本映射的问题。
+   1. 测试有效的方法<https://blog.csdn.net/pkuyjxu/article/details/108059839>。但是这个方面修改之后pip也出现了问题。方法虽然有效但是无法解决所有问题。使用2中的方法进行尝试。
+      ```shell
+      sudo rm /usr/bin/python3
+      sudo ln -s python3.5 /usr/bin/python3
+      ```
+   2. 在ubuntu桌面无法打开terminal的情况下有两种方式可以打开类似terminal的工具
+      1. 在“所有程序”中搜索xterm，使用xterm打开。
+      2. 打开一个文件夹，然后文件夹上一般都有"open in terminal"的选项。此时这个操作可以打开terminal。
+   3. 回答:<https://www.cnblogs.com/jsdy/p/12694908.html>。
+2. 
+
+
+
+安装Python步骤：
 
 1. Ubuntu 20.04.x Desktop中很多组件都依赖Python 3.8.x。不要直接删除系统自带的python3。直接会导致gnome也被删除。建议安装其他版本的Python，然后将修改指向。
    1. 参考:<https://zhuanlan.zhihu.com/p/403819436>。
+   2. 使用PPA安装最方便、直接：
+      1. sudo apt update
+      2. sudo apt install software-proerties-common
+      3. sudo add-apt-repository ppa:deadsnakes/ppa
+      4. sudo apt install python3.10
 2. update-alternatives相关命令
    1. 列出所有可用的 python 替代版本信息：update-alternatives --list python3。
       1. 如果下面出现以下信息表示还没有可以替代的版本
@@ -80,19 +110,23 @@ Reference 安装pip参考:<https://zhuanlan.zhihu.com/p/418368712>。
          2. sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.8 2
       3. 安装之后再次查看python的对应关系：sudo update-alternatives --list python3。
    3. 配置python命令对应的版本：sudo update-alternatives --config python3
-   ```log
-   There are 2 choices for the alternative python3 (providing /usr/bin/python3).
+      ```log
+      There are 2 choices for the alternative python3 (providing /usr/bin/python3).
 
-   Selection    Path                 Priority   Status
-   ------------------------------------------------------------
-   * 0            /usr/bin/python3.10   1         auto mode
-   1            /usr/bin/python3.10   1         manual mode
-   2            /usr/bin/python3.8    1         manual mode
+      Selection    Path                 Priority   Status
+      ------------------------------------------------------------
+      * 0            /usr/bin/python3.10   1         auto mode
+      1            /usr/bin/python3.10   1         manual mode
+      2            /usr/bin/python3.8    1         manual mode
 
-   Press <enter> to keep the current choice[*], or type selection number: 1
-   ```
+      Press <enter> to keep the current choice[*], or type selection number: 1
+      ```
    和之前的配置对应，选择1作为默认版本。
-   1. 然后再用python3 --version查看版本情况。
+   4. 然后再用python3 --version查看版本情况。
+   5. 删除对应的软连接
+      ```shell
+      $ update-alternatives --remove python /usr/bin/python2.7
+      ```
 3. 对于ubuntu 20.04而言安装pip。需要的python命令是python3。
    1. 直接运行pip3 --version会报错。此时需要修复distutils。
       1. 错误信息为：ModuleNotFoundError: No module named 'distutils.util'。
@@ -148,6 +182,30 @@ Reference 安装pip参考:<https://zhuanlan.zhihu.com/p/418368712>。
          trusted-host = pypi.tuna.tsinghua.edu.cn
          ```
    4. 查看当前pip源：pip3 config list 。完成。
+
+## Install CUDA and cuDNN
+
+Reference: <https://blog.csdn.net/h3c4lenovo/article/details/119003405>
+<https://zhuanlan.zhihu.com/p/424817205>
+
+CUDA是GPU深度学习的运行库，那么cuDNN就是训练加速工具，两者要相互配合使用，所以一般机器学习需要训练引擎(tensorflow-gpu) + CUDA + cuDNN使用。
+
+1. 查看是否安装NVIDIA显卡：lspci | grep -i nvidia
+2. 查看显卡信息：nvidia-smi
+3. 如果没有显卡信息需要重新安装显卡驱动。
+   1. 添加驱动下载源：
+      1. sudo add-apt-repository ppa:graphics-drivers/ppa
+      2. sudo apt update
+
+
+
+### Install CUDA
+
+### Install cuDNN
+
+
+
+
 ## File System
 
 reference: <https://zhuanlan.zhihu.com/p/128669031>
