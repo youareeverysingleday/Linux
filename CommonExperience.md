@@ -65,6 +65,14 @@ reference: <https://linuxize.com/post/how-to-enable-ssh-on-ubuntu-20-04/>
    1. 禁用：sudo systemctl disable --now ssh
    2. 重启：sudo systemctl enable --now ssh
 
+### Use Python
+
+1. 在Ubuntu 20.04的版本中自带的是Python 3.8。如无十分必要，不建议重新安装新的版本Python版本。因为：
+   1. 新版本的Python会和Ubuntu 20.04自带的版本起冲突。
+   2. Ubuntu 20.04很多组件依赖Python，贸然升级Python会导致Ubuntu Desktop崩溃。
+2. Ubuntu 20.04最初的Python中没有带pip。
+   1. 使用 sudo apt install python3-pip来安装。
+
 ### Install Python
 
 Reference 简要安装python参考:<https://blog.csdn.net/Hiking_Yu/article/details/104373221>。
@@ -185,8 +193,9 @@ Reference 安装pip参考:<https://zhuanlan.zhihu.com/p/418368712>。
 
 ## Install CUDA and cuDNN
 
-Reference: <https://blog.csdn.net/h3c4lenovo/article/details/119003405>
-<https://zhuanlan.zhihu.com/p/424817205>
+###  Reference
+1. <https://blog.csdn.net/h3c4lenovo/article/details/119003405>
+2. <https://zhuanlan.zhihu.com/p/424817205>
 
 CUDA是GPU深度学习的运行库，那么cuDNN就是训练加速工具，两者要相互配合使用，所以一般机器学习需要训练引擎(tensorflow-gpu) + CUDA + cuDNN使用。
 
@@ -243,7 +252,7 @@ Unix系统把一切资源都看作是文件，包括硬件设备。硬件所形�
 |/sys|这个目录其实跟/proc非常类似，也是一个虚拟的档案系统，主要也是记录与核心相关的资讯。 包括目前已载入的核心模组与核心侦测到的硬体装置资讯等等。 这个目录同样不占硬盘容量。|
 |.|代表当前的目录，也可以使用 ./ 来表示；|
 |..|代表上一层目录，也可以 ../ 来代表。|
-
+|~|表示当前用户主目录，也就是当前登录用户的用户目录。我登录用户是chen。cd ~。这里~代表的就是/home/chen/。如果使用的是root用户（也就是sudo su之后的目录环境中），那么这里~ 代表的就是/root目录。|
 
 ### 绝对路径与相对路径
 
