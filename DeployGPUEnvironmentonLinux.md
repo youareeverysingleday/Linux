@@ -2,10 +2,15 @@
 
 # Deploy GPU Environment on Linux
 
+## Understanding
+
+1. CUDA是nvidia的机器学习驱动。
+2. cuDNN相当于是CUDA在深度学习上的补丁。cuDNN其实是CUDA的一个补丁，专为深度学习运算进行优化的。
+
 ## References
 
 1. CUDA安装<https://blog.csdn.net/h3c4lenovo/article/details/119003405>。
-2. 这个参考很清晰<https://www.bilibili.com/video/BV1rd4y187nM>。
+2. windows安装步骤参考很清晰<https://www.bilibili.com/video/BV1rd4y187nM>。
 3. Linux下的tensorflow, CUDA, cuDNN版本对应情况。官方建议构建配置：<https://tensorflow.google.cn/install/source?hl=zh-cn>。
 
 ## 安装步骤
@@ -17,7 +22,7 @@
 
     |版本|Python|版本|编译器|构建工具|cuDNN|CUDA|
     |---|---|---|---|---|---|---|
-    |tensorflow-2.6.0|3.6-3.9|GCC 7.3.1| 2019|	Bazel 3.7.2|8.1|11.2|
+    |tensorflow-2.6.0|3.6-3.9|GCC 7.3.1| 2019|Bazel 3.7.2|8.1|11.2|
     |tensorflow-2.5.0|3.6-3.9|GCC 7.3.1| 2019|Bazel 3.7.2|8.1|11.2|
     |tensorflow-2.4.0|3.6-3.8|GCC 7.3.1| 2019|Bazel 3.1.0|8.0|11.0|
     |tensorflow-2.3.0|3.5-3.8|GCC 7.3.1| 2019|Bazel 3.1.0|7.6|10.1|
@@ -119,7 +124,18 @@
         sudo sh cuda_11.2.2_460.32.03_linux.run
         ```
         第一句是下载cuda。第二句是安装。需要注意的是gcc版本已经降低了才能正常安装。
-    3. 使用nvidia-smi可以看到出现GPU信息。
+    3. 在运行了sudo sh cuda_11.2.2_460.32.03_linux.run之后会出现需要选择的选项：
+       1. 选择Continue。![第一次选择](Pictures/InstallCUDASelectionPage1.png) 
+       2. 填入accept。![第二次选择](Pictures/InstallCUDASelectionPage2.png) 
+       3. 因为之前已经安装的nvidia的驱动，所以这里不用再选在Driver选项。其中CUDA Toolkit 11.2是必须的，其他的可选。这里是都选了。注意图片里面显示的是10.2的版本。在本机安装的是11.2版本。![第三次选择](Pictures/InstallCUDASelectionPage3.png)
+       4. 注意事项：
+          1. 在ssh端无法显示上述安装步骤。只能在本机安装。
+          2. 安装的过程没有任何进度显示。只有最后安装完成之后有信息输出。过程需要大约5分钟的时间。
+          3. 在没有安装成功cuda_11.2.2_460.32.03_linux.run的现象是/usr/local目录下是没有包含cuda名字的文件夹的。
+          4. 之后才能对环境变量进行配置。
+            
+
+    4. 使用nvidia-smi可以看到出现GPU信息。
         ```log
         +---------------------------------------------------------------------------------------+
         | NVIDIA-SMI 535.104.05             Driver Version: 535.104.05   CUDA Version: 12.2     |
@@ -145,6 +161,48 @@
         +---------------------------------------------------------------------------------------+
         ```
 11. 配置环境变量
+    1. ~/.表示的路径是当前用户主目录，也就是当前登录用户的用户目录。我登录用户是chen。cd ~。这里~代表的就是/home/chen/。如果使用的是root用户（也就是sudo su之后的目录环境中），那么这里~ 代表的就是/root目录。
+    2. ctrl+H可以显示desktop文件夹中的隐藏文件。
+    3. 设置环境变量
+    4. 打开.bashrc文件
+      ```shell
+      vim ~/.bashrc
+      ```
+    5. 最末尾添加下列内容。
+      ```shell
+      # cuda安装位置
+      export PATH=$PATH:/usr/local/cuda-11.2/bin
+      export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda-11.2/lib64
+      export LIBRARY_PATH=$LIBRARY_PATH:/usr/local/cuda-11.2/lib64
+      ```
+    6. 使用使得环境变量生效。
+      ```shell
+      source ~/.bashrc
+      ```
+    7. 验证是否生效。
+      ```shell
+      nvcc -V
+      ```
+      安装成功的情况下输出信息如下：
+      ```log
+      nvcc: NVIDIA (R) Cuda compiler driver
+      Copyright (c) 2005-2021 NVIDIA Corporation
+      Built on Sun_Feb_14_21:12:58_PST_2021
+      Cuda compilation tools, release 11.2, V11.2.152
+      Build cuda_11.2.r11.2/compiler.29618528_0
+      ```
+      在没有安装成功的情况下，会提示没有nvcc命令。系统提示：
+      ```shell
+      Command 'nvcc' not found, but can be installed with: 
+      sudo apt install nvidia-cuda-toolkit
+      ```
+      没必要执行上述提示信息，因为在安装CUDA（cuda_11.2.2_460.32.03_linux.run）时已经选择安装了toolkit。实际上就是环境变量没有配置成功，或者配置了没有使用source ~/.bashrc来使得环境参数生效。
+      如果配置成功了会出现CUDA的版本信息。
+12. 安装cuDNN
+    1. 需要在nvidia注册。
+    2. 登录之后在<https://developer.nvidia.com/rdp/cudnn-archive>下载。
+    3. 需要科学上网下载打开页面。然后不用科学上网的情况下载地址为：<https://developer.nvidia.com/compute/machine-learning/cudnn/secure/8.1.1.33/11.2_20210301/cudnn-11.2-linux-x64-v8.1.1.33.tgz>。
+    4. 下载地址有租期。过期之后无法继续下载。在科学上网的情况下很容易中途下载失败。基本上要求5分钟之内下载完成。
 
 ### windows环境
 
@@ -212,7 +270,7 @@
 2. 显存大小：决定可以训练多大的模型以及训练时的最大batch size。对于较大规模的训练而言尤其敏感。
 3. 屏蔽GPU：
    1. 显卡开关：os.environ["CUDA_VISIBLE_DEVICES"] = "-1" 。
-   2. 
+   2. python验证代码：
    ```python
    cpus = tf.config.list_physical_devices(devices_type='CPU')
    tf.config.set_visible_devices(devices=cpus)
@@ -222,7 +280,6 @@
 6. 官方建议构建配置：<https://tensorflow.google.cn/install/source_windows#gpu>。可以看到CUDA能够支持的最新tensorflow的版本为2.6.0，Python的版本为3.9。所以不能安装最新的tensorflow和python版本。
 
     20230909查询结果：
-
     |版本|Python|版本|编译器|构建工具|cuDNN|CUDA|
     |---|---|---|---|---|---|---|
     |tensorflow_gpu-2.6.0|3.6-3.9|MSVC| 2019|	Bazel 3.7.2|8.1|11.2|
