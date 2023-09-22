@@ -203,6 +203,41 @@
     2. 登录之后在<https://developer.nvidia.com/rdp/cudnn-archive>下载。
     3. 需要科学上网下载打开页面。然后不用科学上网的情况下载地址为：<https://developer.nvidia.com/compute/machine-learning/cudnn/secure/8.1.1.33/11.2_20210301/cudnn-11.2-linux-x64-v8.1.1.33.tgz>。
     4. 下载地址有租期。过期之后无法继续下载。在科学上网的情况下很容易中途下载失败。基本上要求5分钟之内下载完成。
+    5. 下载完成之后解压。
+    6. 使用下列命令将解压出来的目录覆盖到11.5中配置的环境变量目录下。
+      ```shell
+      sudo cp -i /home/[Account]/Downloads/cudnn-11.2-linux-x86-v8.1.1.33/cuda/include/* /usr/local/cuda-11.2/include/
+      sudo cp -i /home/[Account]/Downloads/cudnn-11.2-linux-x86-v8.1.1.33/cuda/lib64/* /usr/local/cuda-11.2/lib64/
+      ```
+      cp -i参数表示是碰到相同文件名的文件需要询问用户具体如何操作。*表示源目录下的所有文件。
+
+      后面一步说需要赋权，但并不知道具体的含义是什么。
+      ```shell
+      sudo chmod a+r /usr/local/cuda-11.2/include/cudnn.h
+      sudo chmod a+r /usr/local/cuda-11.2/lib64/libcudnn*
+      ```
+    7. 查看cudnn的版本
+      ```shell
+      cat /usr/local/cuda-11.2/include/cudnn_version.h | grep CUDNN_MAJOR -A 2
+      ```
+13. 测试
+    1. 测试代码
+      ```python
+      import tensorflow as tf
+      from tensorflow.python.client import device_lib
+      print(device_lib.list_local_devices())
+      print(tf.test.is_gpu_available())
+      ```
+    2. 直接在当前情况下使用会报错报错内容为
+      ```log
+      If you cannot immediately regenerate your protos. some other possible workaround are:
+      1. Downgrade the protobuf package to 3.20.x or lower.
+      2. Set PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python (but this will use pure-Python parsing and will be much slower).
+      ```
+      参考解决方法：<https://blog.csdn.net/qq_19313495/article/details/125049344>。
+      解决方法：将pip3中安装的protobuf包由当前4.24.3版本降低为3.20.3版本既可以解决该报错。
+
+Completed.
 
 ### windows环境
 
@@ -263,6 +298,8 @@
    5. 查看服务类型：tf.config.list_physical_devices('GPU') 。
    6. 退出python环境：exit() 。
 9. 在视频最后用代码进行测试时，使用GPU的训练时并没有专门的代码来选择或者指定GPU。而在用CPU训练时，使用了os.environ["CUDA_VISIBLE_DEVICES"] = "-1"来禁用GPU。使用典型的卷积神经网络来验证效果会比较明显。
+
+Completed.
 
 ### Tips
 
