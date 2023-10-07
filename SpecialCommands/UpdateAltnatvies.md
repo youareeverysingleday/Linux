@@ -1,5 +1,7 @@
 # update-alternatives on Ubuntu
 
+使用这个命令是在尝试对Ubuntu 20.04自带的Python 3.8升级时需要使用到的。强烈不建议升级Ubuntu自带的Python版本。因为很多Ubuntu 20.04系统自带的组件是于自带的Python 3.8强依赖。一旦修改相关环境变量或者升级Python本身会出现很多意外情况。
+
 ## reference
 
 1. 这个参考已经非常详细了<https://www.jianshu.com/p/4d27fa2dce86>

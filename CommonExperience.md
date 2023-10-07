@@ -191,28 +191,15 @@ Reference 安装pip参考:<https://zhuanlan.zhihu.com/p/418368712>。
          ```
    4. 查看当前pip源：pip3 config list 。完成。
 
-## Install CUDA and cuDNN
+## Offline Install Ubuntu
 
 ###  Reference
-1. <https://blog.csdn.net/h3c4lenovo/article/details/119003405>
-2. <https://zhuanlan.zhihu.com/p/424817205>
 
-CUDA是GPU深度学习的运行库，那么cuDNN就是训练加速工具，两者要相互配合使用，所以一般机器学习需要训练引擎(tensorflow-gpu) + CUDA + cuDNN使用。
+1. 没有参考该内容。如何在没有互联网连接的情况下离线更新 Ubuntu <https://linux.cn/article-15253-1.html>。
 
-1. 查看是否安装NVIDIA显卡：lspci | grep -i nvidia
-2. 查看显卡信息：nvidia-smi
-3. 如果没有显卡信息需要重新安装显卡驱动。
-   1. 添加驱动下载源：
-      1. sudo add-apt-repository ppa:graphics-drivers/ppa
-      2. sudo apt update
+### steps
 
-
-
-### Install CUDA
-
-### Install cuDNN
-
-
+Null
 
 
 ## File System
@@ -265,6 +252,12 @@ Unix系统把一切资源都看作是文件，包括硬件设备。硬件所形�
 
 > cd /var/log --绝对路径写法
 > cd ../../var/log --相对路径写法。因为我们的位置是/home/hyxy里，所以要回到上一层（../）到达/home/里，然后再回到上 一层(../)到达根目录，此时才能看到/var，然后向里移动。
+
+
+### 如果路径中含有空格
+
+1. 使用转义字符\来处理空格。
+2. 使用''或者""将路径包含起来即可。
 
 
 ### 文件类型

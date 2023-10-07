@@ -6,12 +6,14 @@
 
 1. CUDA是nvidia的机器学习驱动。
 2. cuDNN相当于是CUDA在深度学习上的补丁。cuDNN其实是CUDA的一个补丁，专为深度学习运算进行优化的。
+3. 总结：CUDA是GPU深度学习的运行库，那么cuDNN就是训练加速工具，两者要相互配合使用，所以一般机器学习需要训练引擎(tensorflow-gpu) + CUDA + cuDNN使用。
 
 ## References
 
 1. CUDA安装<https://blog.csdn.net/h3c4lenovo/article/details/119003405>。
 2. windows安装步骤参考很清晰<https://www.bilibili.com/video/BV1rd4y187nM>。
 3. Linux下的tensorflow, CUDA, cuDNN版本对应情况。官方建议构建配置：<https://tensorflow.google.cn/install/source?hl=zh-cn>。
+4. 另一个安装参考：Ubuntu 20.04安装CUDA 11.4, cuDNN 8.24<https://zhuanlan.zhihu.com/p/424817205>。
 
 ## 安装步骤
 
@@ -118,7 +120,7 @@
         ```shell
         uname -m
         ```
-    2. 这里下载的是CUDA Toolkit 11.2.2版本。选择runfile文件下载。
+    2. 这里下载的是CUDA Toolkit 11.2.2版本。之所以选择CUDA Toolkit 11.2.2版本是因为Python3和TensorFlow2的对应关系决定的。CUDA Toolkit的下载地址<https://developer.nvidia.com/cuda-toolkit-archive>。选择runfile文件下载。
         ```shell
         sudo wget https://developer.download.nvidia.com/compute/cuda/11.2.2/local_installers/cuda_11.2.2_460.32.03_linux.run
         sudo sh cuda_11.2.2_460.32.03_linux.run
