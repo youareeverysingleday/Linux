@@ -34,6 +34,10 @@
         ```shell
         cp -r /home/wally/test /local/arm
         ```
+2. 查看挂载情况
+   1. df -h
+   2. mount
+   3. reference: <>
 
 
 |编号|参数名称|作用|说明|

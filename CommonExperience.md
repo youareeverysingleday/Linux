@@ -282,3 +282,24 @@ Unix系统把一切资源都看作是文件，包括硬件设备。硬件所形�
 方法1：ls -l或者ll
 方法2：file命令
 方法3：stat命令
+
+## 局域网环境安装Ubuntu
+
+### 总体思路
+
+1. 使用Ubuntu启动盘安装Ubuntu。
+2. 使用apt-mirror工具制作软件包的镜像，然后让ubuntu安装相关更新。
+
+### 参考
+
+1. 重要-ubuntu下的apt内网本地源的正确搭建。使用apt-mirror工具<https://www.cnblogs.com/mlwork/p/12262819.html>。这个工具下载了整个ubuntu需要更新的软件源。大约有150GB的大小，需要下载很长时间。
+   1. 需要详细说明。特别是mirror.list的使用。
+2. 没有使用。制作少量软件源的参考。
+   1. <https://blog.csdn.net/qq_41037945/article/details/124440867>。
+   2. <https://zhuanlan.zhihu.com/p/346562578>。
+3. 安装过程中的磁盘分区
+   1. 需要详细说明。特别是挂载的步骤、方式、区别。
+
+> 命令中的gedit就是ubuntu中的TextEditor工具。
+
+需要下载的：python的依赖库。
