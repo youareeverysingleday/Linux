@@ -38,6 +38,9 @@
    1. df -h
    2. mount
    3. reference: <>
+3. 查看路径
+   1. whereis python
+   2. which python
 
 
 |编号|参数名称|作用|说明|

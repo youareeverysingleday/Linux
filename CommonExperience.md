@@ -302,4 +302,25 @@ Unix系统把一切资源都看作是文件，包括硬件设备。硬件所形�
 
 > 命令中的gedit就是ubuntu中的TextEditor工具。
 
-需要下载的：python的依赖库。
+### 离线安装python的依赖库
+
+1. 使用命令保存当前安装环境的Python依赖包。
+   ```shell
+   pip freeze > requirement.txt
+   ```
+   保存在/home/[Account]/路径下。
+2. 使用命令将所有依赖库离线下载。
+   ```shell
+   pip download -d [SaveDependentsPath] -r [path of Requirement.txt]
+   ```
+   path of Requirement.txt: requirement.txt的保存路径。
+   SaveDependentsPath: 将下载的依赖库保存的目录。
+
+   示例：
+   ```shell
+   pip download -d /home/[Account]/PythonDependents/ -r /home/[Account]/requirement.txt
+   ```
+3. 会出现的问题：
+   1. 下载依赖包报错。
+      1. 换一个安装源。
+      2. 最常用的方法-删除对应需要下载的python库。

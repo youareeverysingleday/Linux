@@ -2,6 +2,69 @@
 
 # Deploy GPU Environment on Linux
 
+## attention
+
+1. **只有英文版的tensorflow python ubuntu cuda cudnn有最新的对应关系**。链接<https://tensorflow.google.cn/install/source?hl=en>。
+   1. 这个太重要了，导致在ubuntu上安装python相关库的时候由于tensorflow的版本太老与最新的pandas、matplotlib所需的numpy版本不匹配。
+   2. 看到中文版对应关系中最新的python版本是3.9，而ubuntu22.04自带的python版本是3.10。从而导致最后选择了ubuntu 20.04版本。
+2. 一定要开始的时候就配置vscode的python编译环境，不然vscode会自己创建一个虚拟环境，导致全局python环境和vscode的编译环境不一致。
+
+如下表所示：为了满足编码要求的工作环境如下：
+
+|Object|version|describer|
+|---|---|---|
+|Ubuntu|20.04 LTS|限制python，C编译器版本。|
+|tensorflow|2.13.0|限制numpy。|
+|python|3.8-3.11|受限于ubuntu版本。限制DGL、tensorflow版本。|
+|Clang|16.0.0||
+|Bazel|5.3.0||
+|cuDNN|8.6||
+|CUDA|11.8||
+|DGL|1.1.2|限制了python、tensorflow版本。|
+|numpy|||
+|pandas||限制numpy版本。|
+|matplotlib||限制numpy版本。|
+|sklearn|||
+|xgboost|||
+||||
+
+更新时间20231009：
+
+Linux下GPU版对应关系： 
+|tensorflow版本|Python|GCC版本|C编译器|构建工具|cuDNN|CUDA|
+|---|---|---|---|---|---|---|
+|tensorflow-2.14.0|3.9-3.11|Clang 16.0.0|Bazel 6.1.0|8.7|11.8|
+|tensorflow-2.13.0|3.8-3.11|Clang 16.0.0|Bazel 5.3.0|8.6|11.8|
+|tensorflow-2.12.0|3.8-3.11|GCC 9.3.1|Bazel 5.3.0|8.6|11.8|
+|tensorflow-2.11.0|3.7-3.10|GCC 9.3.1|Bazel 5.3.0|8.1|11.2|
+|tensorflow-2.10.0|3.7-3.10|GCC 9.3.1|Bazel 5.1.1|8.1|11.2|
+|tensorflow-2.9.0|3.7-3.10|GCC 9.3.1|Bazel 5.0.0|8.1|11.2|
+|tensorflow-2.8.0|3.7-3.10|GCC 7.3.1|Bazel 4.2.1|8.1|11.2|
+|tensorflow-2.7.0|3.7-3.9|GCC 7.3.1|Bazel 3.7.2|8.1|11.2|
+|tensorflow-2.6.0|3.6-3.9|GCC 7.3.1|Bazel 3.7.2|8.1|11.2|
+|tensorflow-2.5.0|3.6-3.9|GCC 7.3.1|Bazel 3.7.2|8.1|11.2|
+|tensorflow-2.4.0|3.6-3.8|GCC 7.3.1|Bazel 3.1.0|8.0|11.0|
+|tensorflow-2.3.0|3.5-3.8|GCC 7.3.1|Bazel 3.1.0|7.6|10.1|
+|tensorflow-2.2.0|3.5-3.8|GCC 7.3.1|Bazel 2.0.0|7.6|10.1|
+
+Linux下CPU版对应关系： 
+|tensorflow版本|Python|GCC版本|编译器|构建工具|cuDNN|CUDA|
+|---|---|---|---|---|---|---|
+|tensorflow-2.14.0|3.9-3.11|Clang 16.0.0|Bazel 6.1.0|
+|tensorflow-2.13.0|3.8-3.11|Clang 16.0.0|Bazel 5.3.0|
+|tensorflow-2.12.0|3.8-3.11|GCC 9.3.1|Bazel 5.3.0|
+|tensorflow-2.11.0|3.7-3.10|GCC 9.3.1|Bazel 5.3.0|
+|tensorflow-2.10.0|3.7-3.10|GCC 9.3.1|Bazel 5.1.1|
+|tensorflow-2.9.0|3.7-3.10|GCC 9.3.1|Bazel 5.0.0|
+|tensorflow-2.8.0|3.7-3.10|GCC 7.3.1|Bazel 4.2.1|
+|tensorflow-2.7.0|3.7-3.9|GCC 7.3.1|Bazel 3.7.2|
+|tensorflow-2.6.0|3.6-3.9|GCC 7.3.1|Bazel 3.7.2|
+|tensorflow-2.5.0|3.6-3.9|GCC 7.3.1|Bazel 3.7.2|
+|tensorflow-2.4.0|3.6-3.8|GCC 7.3.1|Bazel 3.1.0|
+|tensorflow-2.3.0|3.5-3.8|GCC 7.3.1|Bazel 3.1.0|
+|tensorflow-2.2.0|3.5-3.8|GCC 7.3.1|Bazel 2.0.0|
+
+
 ## Understanding
 
 1. CUDA是nvidia的机器学习驱动。
@@ -22,7 +85,7 @@
 1. Linux配置环境对应关系。
     20230920查询结果(只显示了Python3和TensorFlow2以上的对应关系)。可以看到CUDA能够支持的最新tensorflow的版本为2.6.0，Python的版本为3.9。所以不能安装最新的tensorflow和python版本。
 
-    |版本|Python|版本|编译器|构建工具|cuDNN|CUDA|
+    |tensorflow版本|Python|GCC版本|编译器|构建工具|cuDNN|CUDA|
     |---|---|---|---|---|---|---|
     |tensorflow-2.6.0|3.6-3.9|GCC 7.3.1| 2019|Bazel 3.7.2|8.1|11.2|
     |tensorflow-2.5.0|3.6-3.9|GCC 7.3.1| 2019|Bazel 3.7.2|8.1|11.2|
@@ -204,7 +267,7 @@
     1. 需要在nvidia注册。
     2. 登录之后在<https://developer.nvidia.com/rdp/cudnn-archive>下载。
     3. 需要科学上网下载打开页面。然后不用科学上网的情况下载地址为：<https://developer.nvidia.com/compute/machine-learning/cudnn/secure/8.1.1.33/11.2_20210301/cudnn-11.2-linux-x64-v8.1.1.33.tgz>。
-    4. 下载地址有租期。过期之后无法继续下载。在科学上网的情况下很容易中途下载失败。基本上要求5分钟之内下载完成。
+    4. 下载地址有租期。过期之后无法继续下载。在科学上网的情况下很容易中途下载失败。通过科学上网先点开下载链接，然后切换到非科学上网状态，快速下载。基本上要求10分钟之内下载完成。
     5. 下载完成之后解压。
     6. 使用下列命令将解压出来的目录覆盖到11.5中配置的环境变量目录下。
       ```shell
@@ -321,7 +384,7 @@ Completed.
     20230909查询结果：
     |版本|Python|版本|编译器|构建工具|cuDNN|CUDA|
     |---|---|---|---|---|---|---|
-    |tensorflow_gpu-2.6.0|3.6-3.9|MSVC| 2019|	Bazel 3.7.2|8.1|11.2|
+    |tensorflow_gpu-2.6.0|3.6-3.9|MSVC| 2019|Bazel 3.7.2|8.1|11.2|
     |tensorflow_gpu-2.5.0|3.6-3.9|MSVC| 2019|Bazel 3.7.2|8.1|11.2|
     |tensorflow_gpu-2.4.0|3.6-3.8|MSVC| 2019|Bazel 3.1.0|8.0|11.0|
     |tensorflow_gpu-2.3.0|3.5-3.8|MSVC| 2019|Bazel 3.1.0|7.6|10.1|
