@@ -320,7 +320,74 @@ Unix系统把一切资源都看作是文件，包括硬件设备。硬件所形�
    ```shell
    pip download -d /home/[Account]/PythonDependents/ -r /home/[Account]/requirement.txt
    ```
-3. 会出现的问题：
-   1. 下载依赖包报错。
-      1. 换一个安装源。
-      2. 最常用的方法-删除对应需要下载的python库。
+3. 会出现的问题：下载依赖包报错。解决方法：1. 换一个安装源。2. 最常用的方法-删除对应需要下载的python库，因为一般无法下载的库都不是python编译环境所强相关的库。
+
+### 使用apt-mirror建立离线apt安装源
+
+#### references
+
+1. 重点参考<https://blog.csdn.net/yanjiee/article/details/85011779>。
+2. 重点参考2<https://www.cnblogs.com/mlwork/p/12262819.html>。
+
+#### Steps
+
+##### 下载源
+
+1. 安装apt-mirror。这台服务器需要是能够连接互联网。
+   ```shell
+   sudo apt-get install apt-mirror
+   ```
+2. 配置apt-mirror下载相关信息。需要配置的是在/etc/apt/目录下的mirror.list文件。初次使用apt-mirror的时候该文件是不在的，直接创建一个mirror.list文件。其中仅对于Ubuntu 20.04而言的内容如下：
+   ```txt
+   ############# config ##################
+   #
+   set base_path    /home/[Account]/apt-mirror
+   #
+   # set mirror_path  $base_path/mirror
+   # set skel_path    $base_path/skel
+   # set var_path     $base_path/var
+   # set cleanscript $var_path/clean.sh
+
+   # 架构配置，i386/amd64，默认的话会下载跟本机相同的架构的源
+   # set defaultarch  <running host architecture>
+   # set postmirror_script $var_path/postmirror.sh
+   # set run_postmirror 0
+
+   # 下载线程数
+   set nthreads     20
+   set _tilde 0
+   #
+   ############# end config ##############
+   # 这里没有添加deb-src的源。
+   # 下面使用的清华的源为：https://mirrors.tuna.tsinghua.edu.cn/ubuntu
+   deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu focal main restricted universe multiverse
+   deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu focal-security main restricted universe multiverse
+   deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu focal-updates main restricted universe multiverse
+   # deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu focal-proposed main restricted universe multiverse
+   # deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu focal-backports main restricted universe multiverse
+
+   # deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu focal main restricted universe multiverse
+   # deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu focal-security main restricted universe multiverse
+   # deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu focal-updates main restricted universe multiverse
+   # deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu focal-proposed main restricted universe multiverse
+   # deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu focal-backports main restricted universe multiverse
+
+   clean https://mirrors.tuna.tsinghua.edu.cn/ubuntu
+   ```
+
+##### 离线安装源
+
+后面几个参数是对软件包的分类（Ubuntu下是 main  restricted  universe  multiverse 这四个）
+main:完全的自由软件。
+restricted:不完全的自由软件。
+universe:ubuntu官方不提供支持与补丁，全靠社区支持。
+muitiverse：非自由软件，完全不提供支持和补丁
+
+
+ubuntu的长期维护版本（LTS）的版本代号对照表
+版本号 Codename
+18.04   bionic
+16.04   xenial
+14.04   trusty
+12.04   precise
+20.04   focal
