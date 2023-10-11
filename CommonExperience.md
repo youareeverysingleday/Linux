@@ -374,6 +374,27 @@ Unix系统把一切资源都看作是文件，包括硬件设备。硬件所形�
 
    clean https://mirrors.tuna.tsinghua.edu.cn/ubuntu
    ```
+3. 在使用apt-mirror最后会出现下列提示信息：
+   ```shell
+   Running the Post Mirror script …
+   (/home/[Account]/apt-mirror/var/postmirror.sh)
+
+   /bin/sh: 0: cannot open /home/[Account]/apt-mirror/var/postmirror.sh: No such file
+
+   Post Mirror script has completed. See above output for any possible errors.
+   ```
+   解决方法为：创建这个文件解决这个报错。
+   ```shell
+   touch /home/[Account]/apt-mirror/var/postmirror.sh
+   ```
+4. 下载的mirror文件夹非常大。使用tar命令打包之后再进行拷贝。
+   ```shell
+   tar -cvf [TargetTarFileName] [SourceFolderPath]
+   ```
+   举例，在apt-mirror-focal相对目录下使用该命令：
+   ```shell
+   tar -cvf apt-mirror-focal.tar apt-mirror-focal
+   ```
 
 ##### 离线安装源
 

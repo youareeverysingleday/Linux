@@ -26,6 +26,9 @@
 |matplotlib||限制numpy版本。|
 |sklearn|||
 |xgboost|||
+|networkx|||
+||||
+||||
 ||||
 
 更新时间20231009：

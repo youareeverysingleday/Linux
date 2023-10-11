@@ -41,6 +41,20 @@
 3. 查看路径
    1. whereis python
    2. which python
+4. 删除文件
+   1. 删除文件
+      ```shell
+      rm [filename]
+      ```
+5. 创建文件。参考<https://blog.csdn.net/qq_39091609/article/details/106878845>。
+   ```shell
+   touch [filename]
+   ```
+   创建多个文件：
+   ```shell
+   touch [filename1], [filename2], [filename3]
+   ```
+
 
 
 |编号|参数名称|作用|说明|
