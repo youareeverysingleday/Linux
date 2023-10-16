@@ -405,18 +405,53 @@ universe:ubuntu官方不提供支持与补丁，全靠社区支持。
 muitiverse：非自由软件，完全不提供支持和补丁
 
 2. ubuntu的长期维护版本（LTS）的版本代号对照表
-版本号 Codename
-18.04   bionic
-16.04   xenial
-14.04   trusty
-12.04   precise
-20.04   focal
+   版本号 Codename
+   18.04   bionic
+   16.04   xenial
+   14.04   trusty
+   12.04   precise
+   20.04   focal
+   22.04    
 
+2. 查看系统架构 uname -m
+3. 查看软件架构 dpkg  --print-architecture .该命令用于显示本机的architecture，我在不同的机器上得到的结果有：arm64或amd64
+4. sudo dpkg --print-foreign-architectures  外部架构，还不太清楚具体用法。
+5. apt apt-get apt-config apt-cache的区别。apt是apt-get apt-config apt-cache最常用命令选项的集合。
+6. 配置apt-get的配置文件sources.list时需要注意以下几点：
+   1. sources.list的名称后面有复数s结尾。
+   2. sources.list中对应本地文件夹的配置为
+      ```shell
+      deb [arch=amd64 trusted=yes] file:///home/[Acoount]/apt-mirror-focal/mirror/mirrors.tuna.tsinghua.edu.cn/ubuntu focal main restricted universe mutliverse
+      deb [arch=amd64 trusted=yes] file:///home/[Acoount]/apt-mirror-focal/mirror/mirrors.tuna.tsinghua.edu.cn/ubuntu focal-updates main restricted universe mutliverse
+      deb [arch=amd64 trusted=yes] file:///home/[Acoount]/apt-mirror-focal/mirror/mirrors.tuna.tsinghua.edu.cn/ubuntu focal-security main restricted universe mutliverse
+      deb [arch=amd64 trusted=yes] file:///home/[Acoount]/apt-mirror-focal/mirror/mirrors.tuna.tsinghua.edu.cn/ubuntu focal-backports main restricted universe mutliverse
+      deb [arch=amd64 trusted=yes] file:///home/[Acoount]/apt-mirror-focal/mirror/mirrors.tuna.tsinghua.edu.cn/ubuntu focal-proposed main restricted universe mutliverse
+      ```
+      其中需要说明的内容为：
+         1. arch=amd64表示为软件架构。注意这里和系统架构是通过两个不同的命令查看。
+         2. 本地安装源一定要添加trusted=yes。有了这个才不会报不信任安装源的错误。
+         3. file:///home/[Acoount]/apt-mirror-focal/mirror/mirrors.tuna.tsinghua.edu.cn/ubuntu 这是通过apt-mirror下载安装源路径下的一个子目录。注意，apt-mirror下载的4级完整路径是：
+            ```text
+            .
+            └─mirror
+               ├─mirrors.tuna.tsinghua.edu.cn
+               │  └─ubuntu
+               │     ├─dists
+               │     └─pool
+               ├─skel
+               │  └─mirrors.tuna.tsinghua.edu.cn
+               │     └─ubuntu
+               │        └─dists
+               └─var
+                  ├─...
+                  ...
+            ```
+            而在apt-mirror中配置的下载镜像文件内容为："set base_path    /home/[Account]/apt-mirror"，这个路径是下载了完整的mirror目录。
+            关键点在于apt在进行apt-get update的时候使用的路径并不能够直接搜索"/home/[Account]/apt-mirror"路径，而搜索的是"/home/[Acoount]/apt-mirror-focal/mirror/mirrors.tuna.tsinghua.edu.cn/ubuntu"目录。之所以apt-get update一直报如下错误的原因就是因为设置的路径想当然的认为是"/home/[Account]/apt-mirror"的路径。
+            ```text
+            ```
+            直到发现apt-get尝试去找的目录和设置的sources.list的目录好像非常别扭。所以修改了设置之后就可以消除上面报错之中的大部分报错。
 
-3. 本地安装源一定要添加trusted=yes
+            
 
-4. 查看系统架构 uname -m
-5. 查看软件架构 dpkg  --print-architecture .该命令用于显示本机的architecture，我在不同的机器上得到的结果有：arm64或amd64
-6. sudo dpkg --print-foreign-architectures  外部架构，还不太清楚具体用法。
-7. apt apt-get apt-config apt-cache的区别。apt是apt-get apt-config apt-cache最常用命令选项的集合。
 
