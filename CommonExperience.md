@@ -191,17 +191,6 @@ Reference 安装pip参考:<https://zhuanlan.zhihu.com/p/418368712>。
          ```
    4. 查看当前pip源：pip3 config list 。完成。
 
-## Offline Install Ubuntu
-
-###  Reference
-
-1. 没有参考该内容。如何在没有互联网连接的情况下离线更新 Ubuntu <https://linux.cn/article-15253-1.html>。
-
-### steps
-
-Null
-
-
 ## File System
 
 reference: <https://zhuanlan.zhihu.com/p/128669031>
@@ -283,175 +272,99 @@ Unix系统把一切资源都看作是文件，包括硬件设备。硬件所形�
 方法2：file命令
 方法3：stat命令
 
-## 局域网环境安装Ubuntu
+## 使用FTP
 
-### 总体思路
-
-1. 使用Ubuntu启动盘安装Ubuntu。
-2. 使用apt-mirror工具制作软件包的镜像，然后让ubuntu安装相关更新。
-
-### 参考
-
-1. 重要-ubuntu下的apt内网本地源的正确搭建。使用apt-mirror工具<https://www.cnblogs.com/mlwork/p/12262819.html>。这个工具下载了整个ubuntu需要更新的软件源。大约有150GB的大小，需要下载很长时间。
-   1. 需要详细说明。特别是mirror.list的使用。
-2. 没有使用。制作少量软件源的参考。
-   1. <https://blog.csdn.net/qq_41037945/article/details/124440867>。
-   2. <https://zhuanlan.zhihu.com/p/346562578>。
-3. 安装过程中的磁盘分区
-   1. 需要详细说明。特别是挂载的步骤、方式、区别。
-
-> 命令中的gedit就是ubuntu中的TextEditor工具。
-
-### 离线安装python的依赖库
-
-1. 使用命令保存当前安装环境的Python依赖包。
+1. apt-get install vsftpd安装vsftpd
+2. 设置开机启动并启动ftp服务。这个命令一般不用。
+   
    ```shell
-   pip freeze > requirement.txt
+   systemctl enable vsftpd
+   systemctl start vsftpd
+   
    ```
-   保存在/home/[Account]/路径下。
-2. 使用命令将所有依赖库离线下载。
+3. 查看其运行状态
    ```shell
-   pip download -d [SaveDependentsPath] -r [path of Requirement.txt]
+   systemctl  status vsftpd
    ```
-   path of Requirement.txt: requirement.txt的保存路径。
-   SaveDependentsPath: 将下载的依赖库保存的目录。
-
-   示例：
+4. 重启服务
    ```shell
-   pip download -d /home/[Account]/PythonDependents/ -r /home/[Account]/requirement.txt
+   systemctl  restart vsftpd
    ```
-3. 会出现的问题：下载依赖包报错。解决方法：1. 换一个安装源。2. 最常用的方法-删除对应需要下载的python库，因为一般无法下载的库都不是python编译环境所强相关的库。
-
-### 使用apt-mirror建立离线apt安装源
-
-#### references
-
-1. 重点参考<https://blog.csdn.net/yanjiee/article/details/85011779>。
-2. 重点参考2<https://www.cnblogs.com/mlwork/p/12262819.html>。
-
-#### Steps
-
-##### 下载源
-
-1. 安装apt-mirror。这台服务器需要是能够连接互联网。
+5. 添加用户
+   命令说明详见[useradd命令](./CommonCommands.md)中关于useradd的命令。
    ```shell
-   sudo apt-get install apt-mirror
+   useradd -d /home/ftp/ftp_root -m ftpadmin
    ```
-2. 配置apt-mirror下载相关信息。需要配置的是在/etc/apt/目录下的mirror.list文件。初次使用apt-mirror的时候该文件是不在的，直接创建一个mirror.list文件。其中仅对于Ubuntu 20.04而言的内容如下：
-   ```txt
-   ############# config ##################
-   #
-   set base_path    /home/[Account]/apt-mirror
-   #
-   # set mirror_path  $base_path/mirror
-   # set skel_path    $base_path/skel
-   # set var_path     $base_path/var
-   # set cleanscript $var_path/clean.sh
-
-   # 架构配置，i386/amd64，默认的话会下载跟本机相同的架构的源
-   # set defaultarch  <running host architecture>
-   # set postmirror_script $var_path/postmirror.sh
-   # set run_postmirror 0
-
-   # 下载线程数
-   set nthreads     20
-   set _tilde 0
-   #
-   ############# end config ##############
-   # 这里没有添加deb-src的源。
-   # 下面使用的清华的源为：https://mirrors.tuna.tsinghua.edu.cn/ubuntu
-   deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu focal main restricted universe multiverse
-   deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu focal-security main restricted universe multiverse
-   deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu focal-updates main restricted universe multiverse
-   # deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu focal-proposed main restricted universe multiverse
-   # deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu focal-backports main restricted universe multiverse
-
-   # deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu focal main restricted universe multiverse
-   # deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu focal-security main restricted universe multiverse
-   # deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu focal-updates main restricted universe multiverse
-   # deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu focal-proposed main restricted universe multiverse
-   # deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu focal-backports main restricted universe multiverse
-
-   clean https://mirrors.tuna.tsinghua.edu.cn/ubuntu
-   ```
-3. 在使用apt-mirror最后会出现下列提示信息：
+   其中"/home/ftp/ftp_root"设置的是新建用户的用户目录。
    ```shell
-   Running the Post Mirror script …
-   (/home/[Account]/apt-mirror/var/postmirror.sh)
-
-   /bin/sh: 0: cannot open /home/[Account]/apt-mirror/var/postmirror.sh: No such file
-
-   Post Mirror script has completed. See above output for any possible errors.
+   passwd ftpadmin
+   New password: 
+   Retype new password: 
+   passwd: password updated successfully
+   chmod -R 777 /home/ftp/ftp_root
    ```
-   解决方法为：创建这个文件解决这个报错。
+6. 修改配置文件
    ```shell
-   touch /home/[Account]/apt-mirror/var/postmirror.sh
+   gedit /etc/vsftpd.conf
    ```
-4. 下载的mirror文件夹非常大。使用tar命令打包之后再进行拷贝。
+
+   将相关的内容修改为如下形式。注意有些是使用#号直接注释掉的，将#号去掉即可。
    ```shell
-   tar -cvf [TargetTarFileName] [SourceFolderPath]
+   listen=NO # 阻止 vsftpd 在独立模式下运行
+   listen_ipv6=YES # vsftpd 将监听 ipv6 而不是 IPv4，你可以根据你的网络情况设置
+   anonymous_enable=NO # 关闭匿名登录
+   local_enable=YES # 允许本地用户登录
+   write_enable=YES # 启用可以修改文件的 FTP 命令
+   local_umask=022 # 本地用户创建文件的 umask 值
+   dirmessage_enable=YES # 当用户第一次进入新目录时显示提示消息
+   xferlog_enable=YES # 一个存有详细的上传和下载信息的日志文件
+   connect_from_port_20=YES # 在服务器上针对 PORT 类型的连接使用端口 20（FTP 数据）
+   xferlog_std_format=YES # 保持标准日志文件格式
+   pam_service_name=vsftpd # vsftpd 将使用的 PAM 验证设备的名字
    ```
-   举例，在apt-mirror-focal相对目录下使用该命令：
+   于文件最后添加如下内容：
    ```shell
-   tar -cvf apt-mirror-focal.tar apt-mirror-focal
+   # 配置使用FTP的用户列表。
+   userlist_deny=NO
+   userlist_enable=YES
+   userlist_file=/etc/vsftpd.allowed_users
    ```
-
-##### 离线安装源
-
-1. 后面几个参数是对软件包的分类（Ubuntu下是 main  restricted  universe  multiverse 这四个）
-main:完全的自由软件。
-restricted:不完全的自由软件。
-universe:ubuntu官方不提供支持与补丁，全靠社区支持。
-muitiverse：非自由软件，完全不提供支持和补丁
-
-2. ubuntu的长期维护版本（LTS）的版本代号对照表
-   版本号 Codename
-   18.04   bionic
-   16.04   xenial
-   14.04   trusty
-   12.04   precise
-   20.04   focal
-   22.04    
-
-2. 查看系统架构 uname -m
-3. 查看软件架构 dpkg  --print-architecture .该命令用于显示本机的architecture，我在不同的机器上得到的结果有：arm64或amd64
-4. sudo dpkg --print-foreign-architectures  外部架构，还不太清楚具体用法。
-5. apt apt-get apt-config apt-cache的区别。apt是apt-get apt-config apt-cache最常用命令选项的集合。
-6. 配置apt-get的配置文件sources.list时需要注意以下几点：
-   1. sources.list的名称后面有复数s结尾。
-   2. sources.list中对应本地文件夹的配置为
-      ```shell
-      deb [arch=amd64 trusted=yes] file:///home/[Acoount]/apt-mirror-focal/mirror/mirrors.tuna.tsinghua.edu.cn/ubuntu focal main restricted universe mutliverse
-      deb [arch=amd64 trusted=yes] file:///home/[Acoount]/apt-mirror-focal/mirror/mirrors.tuna.tsinghua.edu.cn/ubuntu focal-updates main restricted universe mutliverse
-      deb [arch=amd64 trusted=yes] file:///home/[Acoount]/apt-mirror-focal/mirror/mirrors.tuna.tsinghua.edu.cn/ubuntu focal-security main restricted universe mutliverse
-      deb [arch=amd64 trusted=yes] file:///home/[Acoount]/apt-mirror-focal/mirror/mirrors.tuna.tsinghua.edu.cn/ubuntu focal-backports main restricted universe mutliverse
-      deb [arch=amd64 trusted=yes] file:///home/[Acoount]/apt-mirror-focal/mirror/mirrors.tuna.tsinghua.edu.cn/ubuntu focal-proposed main restricted universe mutliverse
-      ```
-      其中需要说明的内容为：
-         1. arch=amd64表示为软件架构。注意这里和系统架构是通过两个不同的命令查看。
-         2. 本地安装源一定要添加trusted=yes。有了这个才不会报不信任安装源的错误。
-         3. file:///home/[Acoount]/apt-mirror-focal/mirror/mirrors.tuna.tsinghua.edu.cn/ubuntu 这是通过apt-mirror下载安装源路径下的一个子目录。注意，apt-mirror下载的4级完整路径是：
-            ```text
-            .
-            └─mirror
-               ├─mirrors.tuna.tsinghua.edu.cn
-               │  └─ubuntu
-               │     ├─dists
-               │     └─pool
-               ├─skel
-               │  └─mirrors.tuna.tsinghua.edu.cn
-               │     └─ubuntu
-               │        └─dists
-               └─var
-                  ├─...
-                  ...
-            ```
-            而在apt-mirror中配置的下载镜像文件内容为："set base_path    /home/[Account]/apt-mirror"，这个路径是下载了完整的mirror目录。
-            关键点在于apt在进行apt-get update的时候使用的路径并不能够直接搜索"/home/[Account]/apt-mirror"路径，而搜索的是"/home/[Acoount]/apt-mirror-focal/mirror/mirrors.tuna.tsinghua.edu.cn/ubuntu"目录。之所以apt-get update一直报如下错误的原因就是因为设置的路径想当然的认为是"/home/[Account]/apt-mirror"的路径。
-            ```text
-            ```
-            直到发现apt-get尝试去找的目录和设置的sources.list的目录好像非常别扭。所以修改了设置之后就可以消除上面报错之中的大部分报错。
-
-            
-
-
+7. 在配置了访问用户列表之后，需要在访问用户列表添加之前创建的用户。原始参考中这个地方有错误，下载修改如下：
+   ```shell
+   gedit /etc/vsftpd.allowed_users
+   ```
+8. 启动vsftpd。
+   ```shell
+   systemctl start vsftpd
+   service vsftpd start
+   ```
+9. Ubuntu本机测试
+   ```shell
+   ftp localhost
+   ```
+   登录成功的提示信息如下：
+   ```shell
+   root@[username]:/home/ftp/ftp_root# ftp localhost
+   Connected to localhost.
+   220 (vsFTPd 3.0.5)
+   Name (localhost:engineer): ftpadmin
+   331 Please specify the password.
+   Password:
+   230 Login successful.
+   Remote system type is UNIX.
+   Using binary mode to transfer files.
+   ftp> exit
+   221 Goodbye.
+   ```
+   如果没有创建用户或者创建的用户不在/etc/vsftpd.allowed_users中，那么会出现以下报错：
+   ```shell
+   root@[username]:/home/ftp/ftp_root# ftp localhost
+   ftp: connect: Connection refused
+   ftp> exit
+   ```
+10. windows局域网测试步骤如下
+   1. 在"我的电脑"中是使用右键"添加一个网络位置"。![添加一个网络位置](./Pictures/WindowsUseFTPStep01.PNG "添加一个网络位置")
+   2. 选择自定义网络位置。![选择自定义网络位置](./Pictures/WindowsUseFTPStep02.PNG "选择自定义网络位置")
+   3. 添加文件位置。![添加文件位置](./Pictures/WindowsUseFTPStep03.PNG "添加文件位置")
+   4. 添加ftp的用户名。![添加ftp的用户名](./Pictures/WindowsUseFTPStep04.PNG "添加ftp的用户名")
+   5. 添加网络位置名称。![添加网络位置名称](./Pictures/WindowsUseFTPStep05.PNG "添加网络位置名称")
