@@ -368,3 +368,16 @@ Unix系统把一切资源都看作是文件，包括硬件设备。硬件所形�
    3. 添加文件位置。![添加文件位置](./Pictures/WindowsUseFTPStep03.PNG "添加文件位置")
    4. 添加ftp的用户名。![添加ftp的用户名](./Pictures/WindowsUseFTPStep04.PNG "添加ftp的用户名")
    5. 添加网络位置名称。![添加网络位置名称](./Pictures/WindowsUseFTPStep05.PNG "添加网络位置名称")
+11. 运行.sh文件
+   ```shell
+   sh [FileName.sh]
+   ```
+12. 删除当前文件夹下所有相同名称的文件
+    ```shell
+    find . -name "filename.xz"|xargs rm
+    ```
+    . 表示当前目录。
+    -name 表示按照名字进行匹配。
+    "filename.xz" 表示需要进行匹配的文件名称。其中可以使用通配符。
+    xargs 表示的含义还未知。
+    rm 表示需要执行的命令是删除。
