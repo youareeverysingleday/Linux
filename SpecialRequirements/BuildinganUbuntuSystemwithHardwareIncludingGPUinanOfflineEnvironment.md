@@ -251,8 +251,8 @@
                   ├─...
                   ...
             ```
-            而在apt-mirror中配置的下载镜像文件内容为："set base_path    /home/[Account]/apt-mirror"，这个路径是下载了完整的mirror目录。
-            关键点在于apt在进行apt-get update的时候使用的路径并不能够直接搜索"/home/[Account]/apt-mirror"路径，而搜索的是"/home/[Acoount]/apt-mirror-focal/mirror/mirrors.tuna.tsinghua.edu.cn/ubuntu"目录。之所以apt-get update一直报如下错误的原因就是因为设置的路径想当然的认为是"/home/[Account]/apt-mirror"的路径。
+            而在apt-mirror中配置的下载镜像文件内容为："set base_path    /home/[Account]/apt-mirror-focal"，这个路径是下载了完整的mirror目录。
+            关键点在于apt在进行apt-get update的时候使用的路径并不能够直接搜索"/home/[Account]/apt-mirror-focal"路径，而搜索的是"/home/[Acoount]/apt-mirror-focal/mirror/mirrors.tuna.tsinghua.edu.cn/ubuntu"目录。之所以apt-get update一直报如下错误的原因就是因为设置的路径想当然的认为是"/home/[Account]/apt-mirror-focal"的路径。
             ```text
             ```
             直到发现apt-get尝试去找的目录和设置的sources.list的目录好像非常别扭。所以修改了设置之后就可以消除上面报错之中的大部分报错。
