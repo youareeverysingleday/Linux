@@ -1,5 +1,7 @@
 # Commond Commands
 
+参考：<https://blog.csdn.net/zardforever123/article/details/125519727>
+
 |编号|类别|命令/语法|功能|举例|参数|参数含义|说明|
 |---|---|---|---|---|---|---|---|
 |1|Linux目录的创建与删除命令|cd [directory]|改变工作目录|cd ..|||该命令将当前目录改变至directory所指定的目录。若没有指定directory， 则回到用户的主目录。为了改变到指定目录，用户必须拥有对指定目录的执行和读权限。该命令可以使用通配符（通配符含义请参见第十章）。|
@@ -126,3 +128,64 @@
 ||||/|
 ||||/|
 ||||/|
+
+|编号|命令|简要作用|说明|
+|---|---|---|---|
+|1|clear|清屏|/|
+|2|clear --help|cmd --help:查看Linux命令的帮助|/|
+|3|history|查看终端输入的所有历史命令|/|
+|4|Ctrl+Alt+T|打开新的终端|/|
+|5|Ctrl+shift+T|打开新的终端Tab|/|
+|6|Ctrl+shift+n|打开新的同目录的终端|/|
+||cd ~|回到用户目录。|/|
+||cd Desktop|回到桌面路径。|/|
+||cd .. |返回上一级。|/|
+||pwd|查看当前路径。|/|
+||mkdir [FolderName]|在当前目录下创建文件夹。|/|
+||mkdir -p test2/test3/test4|创建多级文件夹。|/|
+||touch [FileEntireName] |创建文件（如果存在只会更新创建时间）|/|
+||touch [FileEntireName]|创建test1.txt文件|/|
+||ls|ls查看当前目录下所有文件及文件夹|/|
+||ls -l|ls -l 查看当前目录下所有文件及文件夹并显示详细信息（字节为单位）|/|
+||ls -a|ls -a 查看当前目录下所有文件及文件夹(包括隐藏的)|/|
+||ls -lh|ls -lh 查看当前目录下所有文件及文件夹并显示详细信息(单位kMGT)|/|
+||ll==ls -laf||/|
+||ls [path]|罗列[path]路径下的所有文件及文件夹|/|
+||tree|tree：显示当前文件树结构 sudo apt-get install tree|/|
+||rm **.**|移除文件|/|
+||rm -r ***|移除文件夹|/|
+||rm -rf ***|移除文件夹及其下的所有文件|/|
+||mv **.**/*** ***|移动文件夹/文件至***|/|
+||cp **.**/*** ***|复制----------------|/|
+||cp /home/zard/test_sh/test2 /home/zard/test_sh/test/test -r||/|
+||cp /home/zard/test_sh/test/test1.txt /home/zard/test_sh/test/test||/|
+||tar czvf all.tar.gz testcom testcom2 tmp|c代表压缩，z代表使用gzip，v代表显示压缩日志，f代表指定压缩包名称，后面是要压缩的文件夹及文件|/|
+||||/|
+||||/|
+||||/|
+||||/|
+
+
+
+## 压缩/解压缩文件
+mkdir testcom
+touch testcom testcom2
+cd testcom && touch testcom testcom2
+cd ..
+tree
+### c代表压缩，z代表使用gzip，v代表显示压缩日志，f代表指定压缩包名称，后面是要压缩的文件夹及文件
+tar czvf all.tar.gz testcom testcom2 tmp
+rm -f testcom testcom2 tmp -r
+### x代表解压缩
+tar xzvf all.tar.gz
+### 解压缩到目录
+mkdir all
+tar xzvf all.tar.gz -C all
+tree
+
+## zip格式
+### 安装压缩工具 sudo apt-get install zip uzip
+zip -r all2 testcom testcom2 tmp
+unzip all2
+mkdir all3
+unzip all2 -d all3

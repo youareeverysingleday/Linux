@@ -3,7 +3,9 @@
 ## 1. 总体思路
 
 1. 使用Ubuntu启动盘安装Ubuntu。
-2. 使用apt-mirror工具制作软件包的镜像，然后让ubuntu安装相关更新。
+2. 使用apt install -y按需的软件源下载。
+   1. apt-mirror实在有点坑。建议弃坑。使用apt-mirror工具制作软件包的镜像，然后让ubuntu安装相关更新。
+3. 使用dpkg制作离线包。
 
 ## 2. 参考
 
@@ -14,6 +16,8 @@
    2. <https://zhuanlan.zhihu.com/p/346562578>。
 3. 安装过程中的磁盘分区
    1. 需要详细说明。特别是挂载的步骤、方式、区别。
+4. 使用apt install -y和dpkg来做软件源。
+   1. <https://blog.csdn.net/yiquan_yang/article/details/109670854>
 
 > 命令中的gedit就是ubuntu中的TextEditor工具。
 
@@ -38,6 +42,11 @@
 3. 会出现的问题：下载依赖包报错。解决方法：1. 换一个安装源。2. 最常用的方法-删除对应需要下载的python库，因为一般无法下载的库都不是python编译环境所强相关的库。
 
 ## 4. 使用apt-mirror建立离线apt安装源
+
+这个方法可行，但是存在以下几个问题：
+1. apt-mirror本身已经很长时间没有进行维护了。直接导致在使用apt-mirror下载完成之后会有类似cnf-amd64、icons-64*64相关内容没有下载的情况出现。然后需要手动下载会非常麻烦。
+   1. 解决方法是修改apt-mirror程序文件或者手动下载对应的包来解决。
+2. apt-mirror下载的镜像非常之大，在本次操作中下载的apt-mirror文件大小维430GB左右。拷贝消耗的时间非常长。当从在线环境复制到离线环境时还非常容易报错，直接导致前功尽弃。
 
 ### 4.1 references
 
@@ -258,6 +267,57 @@
             直到发现apt-get尝试去找的目录和设置的sources.list的目录好像非常别扭。所以修改了设置之后就可以消除上面报错之中的大部分报错。
 
 
-            
+#### 4.2.3 sources.list文件格式说明
+
+参考: <https://www.cnblogs.com/yahuian/p/apt-sources-list.html>
+
+![sources.list文件格式](../Pictures/sourceslist_format.png "sources.list文件格式")
+
+1. 第一部分
+    deb 表示二进制可执行文件
+    deb-src 表示包的源代码
+2. 第二部分：URL仓库地址。一定要使用https的软件源地址。
+3. 第三部分：发行版代号，ubuntu 20.04 为 focal
+    ```shell
+    ubuntu@VM-0-12-ubuntu:~$ lsb_release -a
+    No LSB modules are available.
+    Distributor ID: Ubuntu
+    Description:    Ubuntu 20.04.1 LTS
+    Release:        20.04
+    Codename:       focal
+    ```
+    security 重要的安全更新
+    updates 建议的更新
+    proposed pre-released 更新
+    backports 不支持的更新（遇到问题不一定有人修，而且可能导致系统出其他问题）
+    **一般情况下，一般选择前2个即可**。
+4. 第四个部分：是按照软件的自由度来区分的。一般情况下，4个全部选择即可。
+    main 包是免费的/开源的，并受 ubuntu 官方的支持
+    restricted 包含各种设备的专用驱动程序
+    universe 包是免费的/开源的，由社区支持
+    multiverse 由于法律/版权问题，这些软件包受到限制
+5. 使用 sed 快速替换
+    ```shell
+    sed -i 's/被替换的内容/要替换成的内容/' file
+    sudo sed -i 's/archive.ubuntu/mirrors.aliyun/' /etc/apt/sources.list
+    ```
+
+## 5. 使用apt install -y和dpkg来做软件源
+
+参考：<https://blog.csdn.net/yiquan_yang/article/details/109670854>
+
+|编号|软件|说明|参考|
+|---|---|---|---|
+||openssh-server|ubuntu上的SSH服务。|<>|
+||sysstat|主要用途是观察服务负载，比如CPU和内存的占用率、网络的使用率以及磁盘写入和读取速度等。|<https://blog.csdn.net/sixisixsix/article/details/106430379>|
+||gawk|主要就是用来在大的数据中提取中自己需要的元素（对文本数据的每行进行处理），然后将其格式化，使得重要的数据更易于阅读。|<https://blog.csdn.net/weixin_42119041/article/details/108735906>|
+||net-tools|网络工具集，包含ifconfig命令等。|<>|
+||bc|bc 命令是任意精度计算器语言，通常在linux下当计算器用。|<https://www.runoob.com/linux/linux-comm-bc.html>|
+||unzip|zip文件压缩、解压缩工具。|<https://www.cnblogs.com/cy0628/p/13903990.html>|
+||wget|下载文件的工具。|<https://blog.csdn.net/feng98ren/article/details/102505662>|
+||iptables-persistent|暂时用不到。iptables是一个linux下的防火墙工具，它能帮助我们基于规则进行网络流量控制。|<https://zhuanlan.zhihu.com/p/574057147>|
+||psmisc|暂时用不到。|<>|
+||docker-compose|暂时用不到。|<>|
+||||<>|
 
             
