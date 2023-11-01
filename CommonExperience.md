@@ -67,7 +67,7 @@ reference: <https://linuxize.com/post/how-to-enable-ssh-on-ubuntu-20-04/>
 
 ### Use Python
 
-1. 在Ubuntu 20.04的版本中自带的是Python 3.8。如无十分必要，不建议重新安装新的版本Python版本。因为：
+1. 在Ubuntu 20.04的版本中自带的是Python 3.8。**如无十分必要，不建议重新安装新的版本Python版本**。因为：
    1. 新版本的Python会和Ubuntu 20.04自带的版本起冲突。
    2. Ubuntu 20.04很多组件依赖Python，贸然升级Python会导致Ubuntu Desktop崩溃。
 2. Ubuntu 20.04最初的Python中没有带pip。
