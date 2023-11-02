@@ -13,23 +13,26 @@
 
 | Object     | version   | describer                                   |
 | ---------- | --------- | ------------------------------------------- |
-| Ubuntu     | 20.04 LTS | 限制python，C编译器版本。                   |
-| tensorflow | 2.13.0    | 限制numpy。                                 |
-| python     | 3.8-3.11  | 受限于ubuntu版本。限制DGL、tensorflow版本。 |
-| Clang      | 16.0.0    |                                             |
+| Ubuntu     | 20.04 LTS | 限制python, C编译器版本                      |
+| tensorflow | 2.12.0    | 限制numpy。                                  |
+| python     | 3.8-3.11  | 受限于ubuntu版本，20.04自带版本为3.8。限制DGL, tensorflow版本。   |
+| GCC        | 9.4.0     | Ubuntu 20.04 LTS 自带GCC版本                 |
+| Clang      | 16.0.0    | 不使用。                               |
 | Bazel      | 5.3.0     |                                             |
-| cuDNN      | 8.6       |                                             |
-| CUDA       | 11.8      |                                             |
-| DGL        | 1.1.2     | 限制了python、tensorflow版本。              |
+| CUDA       | 11.8      | 受限于ubuntu, python版本。                   |
+| cuDNN      | 8.6       | 受限于ubuntu, python版本                     |
+| DGL        | 1.1.2     | 限制了python, tensorflow版本。               |
 | numpy      |           |                                             |
 | pandas     |           | 限制numpy版本。                             |
-| matplotlib |           | 限制numpy版本。                             |
-| sklearn    |           |                                             |
-| xgboost    |           |                                             |
-| networkx   |           |                                             |
-|            |           |                                             |
-|            |           |                                             |
-|            |           |                                             |
+| matplotlib |           | 可视化, 限制numpy版本。                             |
+| scikit-learn |           | 机器学习框架                          |
+| xgboost    |           | xgboost框                                |
+| networkx   |           | 复杂网络                                 |
+| gensim     |           |                                             |
+|gensim||小型机器学习模型库|
+|imageio||图片处理|
+|pillow||图片处理|
+|gym||强化学习环境|
 
 更新时间20231009：
 
@@ -39,7 +42,7 @@ Linux下GPU版对应关系：
 | ----------------- | -------- | ------------ | ----------- | ----- | ---- | 
 | tensorflow-2.14.0 | 3.9-3.11 | Clang 16.0.0 | Bazel 6.1.0 | 8.7   | 11.8 | 
 | tensorflow-2.13.0 | 3.8-3.11 | Clang 16.0.0 | Bazel 5.3.0 | 8.6   | 11.8 |
-| tensorflow-2.12.0 | 3.8-3.11 | GCC 9.3.1    | Bazel 5.3.0 | 8.6   | 11.8 |
+|**tensorflow-2.12.0**| 3.8-3.11 | GCC 9.3.1    | Bazel 5.3.0 | 8.6   | 11.8 |
 | tensorflow-2.11.0 | 3.7-3.10 | GCC 9.3.1    | Bazel 5.3.0 | 8.1   | 11.2 |
 | tensorflow-2.10.0 | 3.7-3.10 | GCC 9.3.1    | Bazel 5.1.1 | 8.1   | 11.2 |
 | tensorflow-2.9.0  | 3.7-3.10 | GCC 9.3.1    | Bazel 5.0.0 | 8.1   | 11.2 |
@@ -216,7 +219,7 @@ Linux下CPU版对应关系：
 
       1. 选择Continue。![第一次选择](../Pictures/InstallCUDASelectionPage1.png)
       2. 填入accept。![第二次选择](../Pictures/InstallCUDASelectionPage2.png)
-      3. 因为之前已经安装的nvidia的驱动，所以这里不用再选在Driver选项。其中CUDA Toolkit 11.2是必须的，其他的可选。这里是都选了。注意图片里面显示的是10.2的版本。在本机安装的是11.2版本。![第三次选择](../Pictures/InstallCUDASelectionPage3.png)
+      3. 因为之前已经安装的nvidia的驱动，所以这里不用再选在Driver选项。其中CUDA Toolkit 11.2是必须的，其他的可选。这里是都选了。注意图片里面显示的是10.2的版本。在本机安装的是11.2版本。![第三次选择](../Pictures/InstallCUDASelectionPage3.png)。注意在11.8的版本中，对于nvidia-fs可以不用安装。**提示信息中会出现：CUDA 11.8需要nvidia驱动版本为540以上，而ubuntu推荐的nvidia显卡驱动版本为nvidia-driver-470。忽略这个提示！！！**
       4. 注意事项：
          1. 在ssh端无法显示上述安装步骤。只能在本机安装。
          2. 安装的过程没有任何进度显示。只有最后安装完成之后有信息输出。过程需要大约5分钟的时间。
@@ -322,6 +325,11 @@ Linux下CPU版对应关系：
     sudo chmod a+r /usr/local/cuda-11.2/lib64/libcudnn*
     ```
 
+    注意11.8对应的cudnn安装方式与上面不同：
+    <https://wenku.csdn.net/answer/m9ufwmpcnr>
+
+    <https://blog.csdn.net/h3c4lenovo/article/details/119003405>
+
     7. 查看cudnn的版本
 
     ```shell
@@ -342,8 +350,8 @@ Linux下CPU版对应关系：
 
     ```log
     If you cannot immediately regenerate your protos. some other possible workaround are:
-    1. Downgrade the protobuf package to 3.20.x or lower.
-    2. Set PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python (but this will use pure-Python parsing and will be much slower).
+    3. Downgrade the protobuf package to 3.20.x or lower.
+    4. Set PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION=python (but this will use pure-Python parsing and will be much slower).
     ```
 
     参考解决方法：[https://blog.csdn.net/qq_19313495/article/details/125049344](https://blog.csdn.net/qq_19313495/article/details/125049344)。

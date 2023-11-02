@@ -61,7 +61,7 @@ Building an Ubuntu system with hardware including GPU in an offline enviroment.
    sudo sed -i 's/archive.ubuntu/mirrors.aliyun/' /etc/apt/sources.list
    ```
 
-## 3. 使用apt install -y和dpkg来做软件源
+## 3. 使用apt install和dpkg来做软件源
 
 步骤如下：
 
@@ -79,13 +79,14 @@ Building an Ubuntu system with hardware including GPU in an offline enviroment.
    | 2必须 | sysstat             | 主要用途是观察服务负载，比如CPU和内存的占用率、网络的使用率以及磁盘写入和读取速度等。                                | [https://blog.csdn.net/sixisixsix/article/details/106430379](https://blog.csdn.net/sixisixsix/article/details/106430379)           |
    | 3必须 | net-tools           | 网络工具集，包含ifconfig命令等。                                                                                     | <>                                                                                                                              |
    | 4必须 | python3-pip         | python中的pip管理工具。                                                                                              | <>                                                                                                                              |
-   | 5     | gawk                | 主要就是用来在大的数据中提取中自己需要的元素（对文本数据的每行进行处理），然后将其格式化，使得重要的数据更易于阅读。 | [https://blog.csdn.net/weixin_42119041/article/details/108735906](https://blog.csdn.net/weixin_42119041/article/details/108735906) |
-   | 6     | bc                  | bc 命令是任意精度计算器语言，通常在linux下当计算器用。                                                               | [https://www.runoob.com/linux/linux-comm-bc.html](https://www.runoob.com/linux/linux-comm-bc.html)                                 |
-   | 7     | unzip               | zip文件压缩、解压缩工具。                                                                                            | [https://www.cnblogs.com/cy0628/p/13903990.html](https://www.cnblogs.com/cy0628/p/13903990.html)                                   |
-   | 8     | wget                | 下载文件的工具。                                                                                                     | [https://blog.csdn.net/feng98ren/article/details/102505662](https://blog.csdn.net/feng98ren/article/details/102505662)             |
-   | 9     | iptables-persistent | 暂时用不到。iptables是一个linux下的防火墙工具，它能帮助我们基于规则进行网络流量控制。                                | [https://zhuanlan.zhihu.com/p/574057147](https://zhuanlan.zhihu.com/p/574057147)                                                   |
-   | 10    | psmisc              | 暂时用不到。                                                                                                         | <>                                                                                                                              |
-   | 11    | docker-compose      | 暂时用不到。                                                                                                         | <>                                                                                                                              |
+   | 5必须 | vsftpd         | ftp工具。                                                                                              | <>                                                                                                                              |
+   | 6     | gawk                | 主要就是用来在大的数据中提取中自己需要的元素（对文本数据的每行进行处理），然后将其格式化，使得重要的数据更易于阅读。 | [https://blog.csdn.net/weixin_42119041/article/details/108735906](https://blog.csdn.net/weixin_42119041/article/details/108735906) |
+   | 7     | bc                  | bc 命令是任意精度计算器语言，通常在linux下当计算器用。                                                               | [https://www.runoob.com/linux/linux-comm-bc.html](https://www.runoob.com/linux/linux-comm-bc.html)                                 |
+   | 8     | unzip               | zip文件压缩、解压缩工具。                                                                                            | [https://www.cnblogs.com/cy0628/p/13903990.html](https://www.cnblogs.com/cy0628/p/13903990.html)                                   |
+   | 9     | wget                | 下载文件的工具。                                                                                                     | [https://blog.csdn.net/feng98ren/article/details/102505662](https://blog.csdn.net/feng98ren/article/details/102505662)             |
+   | 10     | iptables-persistent | 暂时用不到。iptables是一个linux下的防火墙工具，它能帮助我们基于规则进行网络流量控制。                                | [https://zhuanlan.zhihu.com/p/574057147](https://zhuanlan.zhihu.com/p/574057147)                                                   |
+   | 11    | psmisc              | 暂时用不到。                                                                                                         | <>                                                                                                                              |
+   | 12    | docker-compose      | 暂时用不到。                                                                                                         | <>                                                                                                                              |
 
 
    2. 下载之前一定使用一次apt-get upgrade和apt-get update命令。用于更新现有的软件和软件源信息。
@@ -97,6 +98,7 @@ Building an Ubuntu system with hardware including GPU in an offline enviroment.
       apt-get download $(apt-rdepends sysstat | grep -v "^ " | sed 's/debconf-2.0/debconf/g')
       apt-get download $(apt-rdepends net-tools | grep -v "^ " | sed 's/debconf-2.0/debconf/g')
       apt-get download $(apt-rdepends python3-pip | grep -v "^ " | sed 's/debconf-2.0/debconf/g')
+      apt-get download $(apt-rdepends vsftpd | grep -v "^ " | sed 's/debconf-2.0/debconf/g')
       ```
    5. 直接下载时会出现如下报错：
 
@@ -139,13 +141,33 @@ Building an Ubuntu system with hardware including GPU in an offline enviroment.
       ```shell
       apt-get install python3-pip
       ```
-   2. 要求代码所需的所有依赖包已经使用pip install命令下载完毕。
-   3. 导出python依赖包清单：
+   2. 修改pip软件源为清华源。
+      ```shell
+      pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+      ```
+   3. 要求代码所需的所有依赖包已经使用pip install命令下载完毕。必须下载的python库如下：
+
+      |库名称|版本|说明|
+      |---|---|---|
+      |tensorflow|2.12.0|machine learning framework|
+      |pandas||数据处理|
+      |numpy||数据处理|
+      |dgl|1.1.2|图学习框架|
+      |scikit-learn||机器学习框架|
+      |networkx||复杂网络|
+      |xgboost||sgboost框架|
+      |gensim||小型机器学习模型库|
+      |matplotlib||可视化|
+      |imageio||图片处理|
+      |pillow||图片处理|
+      |gym||强化学习环境|
+
+   4. 导出python依赖包清单：
 
       ```shell
       pip freeze >requirements.txt
       ```
-   4. 将依赖包下载到指定的文件夹。
+   5. 将依赖包下载到指定的文件夹。
 
       ```shell
       pip download -r [path of Requirement.txt] -d [RequirementPath]
@@ -159,7 +181,7 @@ Building an Ubuntu system with hardware including GPU in an offline enviroment.
       ```
 
       在下载的过程中绝大多数情况下会报两种错误：1. 某种依赖包无法下载或者不存在。解决方法是删除requirements.txt中对应的依赖包的列，然后重新运行该命令即可。原因：在下载的过程中由于ubuntu上已经安装有python 3.8而且已经安装了部分与ubuntu直接相关的python依赖包。也就是说offline环境中和online环境中的依赖包已经存在并且版本也一致。
-      2. 某种依赖包的版本不匹配。按照报错中的提示手动调整requirements.txt对应依赖包的版本号，然后继续尝试即可。一般情况下调整为提示所需范围的最新版本即可。
+      1. 某种依赖包的版本不匹配。按照报错中的提示手动调整requirements.txt对应依赖包的版本号，然后继续尝试即可。一般情况下调整为提示所需范围的最新版本即可。
 
 ### 3.2 压缩
 
@@ -206,4 +228,68 @@ sudo dpkg -i *
 
 ```shell
 pip install --no-index --find-links=[PythonDependenciesPath] -r requirements.txt
+```
+
+## 4. 硬盘
+
+参考，比较清晰:<https://blog.csdn.net/u013171226/article/details/107680262>。
+参考补充:<https://blog.csdn.net/weixin_42129680/article/details/112977063>。
+
+
+一般情况下服务器上都会有多块硬盘。在安装ubuntu的时候需要明确那块硬盘被服务器指定为了启动硬盘。如果安装到非启动硬盘就会出现无法找到引导盘的问题。
+
+当安装到正确的引导硬盘之后，这个时候就需要将非引导硬盘挂载到ubuntu中。
+
+1. 查看硬盘情况。
+   ```shell
+   fdisk -l
+   ```
+   或者使用
+   ```shell
+   lsblk
+   ```
+   lsblk显示的清晰清晰许多。在不需要查看详细信息的时候建议使用，缺点是无法看到硬盘的路径。
+2. 格式化磁盘并写入文件系统
+   ```shell
+   mkfs.ext4 /dev/HardDiskID
+   ```
+   /dev/HardDiskID是硬盘路径。这个路径只能通过fdisk -l来查看。举例：/dev/sda。它是机械硬盘对应的路径。
+
+3. 挂载硬盘
+   ```shell
+   mount  /dev/HardDiskID [MountPath]
+   ```
+   /dev/HardDiskID是硬盘路径。这个路径只能通过fdisk -l来查看。举例：/dev/sda。它是机械硬盘对应的路径。
+   
+   [MountPath]是硬盘被挂载的路径。
+4. 查看硬盘信息
+   ```shell
+   df -h
+   ```
+5. 设置开机自动挂载
+   ```shell
+   vim /etc/fstab
+   ```
+   在最后添加一行内容为：
+   ```text
+   盘符路径  挂载路径  ext4  defaults 0  1
+   ```
+
+## Nvidia
+
+### dpkg用法
+
+dpkg显示安装信息<https://blog.csdn.net/poisonchry/article/details/121591741>
+```shell
+dpkg -l
+```
+
+dpkg安装deb<https://blog.csdn.net/qq_41375318/article/details/115616234>
+```shell
+dpkg -i [deb package's name]
+```
+
+dpkg删除deb
+```shell
+dpkg -r [deb package's name]
 ```

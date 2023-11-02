@@ -171,7 +171,7 @@ Reference 安装pip参考:<https://zhuanlan.zhihu.com/p/418368712>。
             2. 最后使用cat /usr/local/bin/pip3查看刚刚写入的内容。
       4. 最后使用pip3 --version查看版本是否出差。Completed.
    3. 修改pip的镜像源：
-      1. 这是在windows环境中修改下载源的命令：pip3 config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple 。 在ubuntu环境中该方法无效。
+      1. 这是在windows环境中修改下载源的命令：pip3 config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple 。 在ubuntu环境中该方法无效（后面实验这个命令在ubuntu中是有效的。可以先试一试，无效再用2中的方法）。
       2. 参考：<https://blog.csdn.net/limengshi138392/article/details/111315014>
       3. 创建pip.conf文件
          ```shell
