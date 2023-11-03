@@ -5,7 +5,7 @@
 | Object     | version   | describer                                   |
 | ---------- | --------- | ------------------------------------------- |
 | Ubuntu     | 20.04 LTS | 限制python, C编译器版本                      |
-|Nvidia Drivers||受限于GPU型号。|
+|Nvidia Drivers|470|受限于GPU型号。|
 | tensorflow | 2.12.0    | 限制numpy。                                  |
 | python     | 3.8-3.11  | 受限于ubuntu版本，20.04自带版本为3.8。限制DGL, tensorflow版本。   |
 | GCC        | 9.4.0     | Ubuntu 20.04 LTS 自带GCC版本                 |
@@ -28,7 +28,7 @@
 
 ## Step
 
-主要思路是：现状底层，再装应用。
+主要思路是：先装底层，再装应用。
 
 安装nvidia驱动->安装CUDA->安装cuDNN->安装tensorflow
 
@@ -77,35 +77,35 @@
 |8.4|安装| sudo sh cuda_11.8.0_520.61.05_linux.run|[CUDA安装过程](#cuda安装过程)。|
 |8.5|查看CUDA安装情况| nvidia-smi |安装之前显示的CUDA版本是11.4，安装之后CUDA的版本为11.8。在没有安装成功cuda_11.8.0_520.61.05_linux.run的现象是/usr/local目录下是没有包含cuda名字的文件夹的。|
 |9|配置CUDA环境变量|/|/|
-|9.1|打开.bashrc文件|gedit ~/.bashrc |打开.bashrc文件|
+|9.1|打开.bashrc文件|gedit ~/.bashrc |打开~/.bashrc文件。注意：当前环境中处于/home/[Account]目录下的.bashrc文件和~/.bashrc文件的内容并不一样。修改的是~/.bashrc文件。|
 |9.2|最后添加环境变量| export PATH=$PATH:/usr/local/cuda-11.8/bin |/|
 |9.3|最后添加环境变量| export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda-11.8/lib64 |/|
-|9.4|最后添加环境变量| export LIBRARY_PATH=$LIBRARY_PATH:/usr/local/cuda-11.8/lib64 |/|
-|9.5|使用使得环境变量生效| source ~/.bashrc |/|
-|9.6|验证是否生效。| nvcc -V |[CUDA安装生效](#cuda安装生效)|
-|10|安装cuDNN|/|/|
-|10.|需要在nvidia注册。|/|/|
-|10.|登录之后在<https://developer.nvidia.com/rdp/cudnn-archive>下载。|/|/|
-|10.|需要科学上网下载打开页面。然后不用科学上网的情况下载地址为：<https://developer.download.nvidia.cn/compute/cudnn/secure/8.6.0/local_installers/11.8/cudnn-linux-x86_64-8.6.0.163_cuda11-archive.tar.xz>。|/|下载地址有租期。过期之后无法继续下载。在科学上网的情况下很容易中途下载失败。通过科学上网先点开下载链接，然后切换到非科学上网状态，快速下载。基本上要求10分钟之内下载完成。|
-|10.|解压。|xz -d cudnn-linux-x86_64-8.6.0.163_cuda11-archive.tar.xz |/|
-|10.|解压。|tar -xvf cudnn-linux-x86_64-8.6.0.163_cuda11-archive.tar.xz |/|
-|10.|使用下列命令将解压出来的目录覆盖到上一步中配置的环境变量目录下| sudo cp -i /home/[Account]/Downloads/cudnn-linux-x86-v8.6.0.163/cuda/include/* /usr/local/cuda-11.8/include/ |/|
-|10.|使用下列命令将解压出来的目录覆盖到上一步中配置的环境变量目录下| sudo cp -i /home/[Account]/Downloads/cudnn-linux-x86-v8.6.0.163/cuda/lib/* /usr/local/cuda-11.8/lib64/ |/|
-|10.|对文件进行赋权| sudo chmod a+r /usr/local/cuda-11.8/include/cudnn.h |/|
-|10.|对文件进行赋权| sudo chmod a+r /usr/local/cuda-11.8/lib64/libcudnn* |/|
-|10.|查看cudnn的版本| cat /usr/local/cuda-11.8/include/cudnn_version.h | grep CUDNN_MAJOR -A 2 |/|
+|9.4|最后添加环境变量| export LIBRARY_PATH=$LIBRARY_PATH:/usr/local/cuda-11.8/lib64 |此项可以不添加。|
+|9.5|最后添加环境变量| export CUDA_HOME=$CUDA_HOME:/usr/local/cuda-11.8 |/|
+|9.6|使用使得环境变量生效| source ~/.bashrc |/|
+|9.7|验证是否生效。| nvcc -V |[CUDA安装生效](#cuda安装生效)|
+|10|安装cuDNN|/|[安装cudnn的方法](#正确安装cudnn的方法)|
+|10.1|需要在nvidia注册。|/|/|
+|10.2|登录之后在<https://developer.nvidia.com/rdp/cudnn-archive>下载。|/|/|
+|10.3|需要科学上网下载打开页面。然后不用科学上网的情况下载地址为：<https://developer.download.nvidia.cn/compute/cudnn/secure/8.6.0/local_installers/11.8/cudnn-local-repo-ubuntu2004-8.6.0.163_1.0-1_amd64.deb>。|/|下载地址有租期。过期之后无法继续下载。在科学上网的情况下很容易中途下载失败。通过科学上网先点开下载链接，然后切换到非科学上网状态，快速下载。基本上要求10分钟之内下载完成。|
+|10.4|安装deb文件|sudo dpkg -i cudnn-local-repo-ubuntu2004-8.6.0.163_1.0-1_amd64.deb|在下载cudnn-local-repo-ubuntu2004-8.6.0.163_1.0-1_amd64.de文件的目录下运行。|
+|10.5|导入CUDA GPG钥匙。安装完成cudnn-local-repo-ubuntu2004-8.6.0.163_1.0-1_amd64.deb之后的回显信息中会有完整的提示语句。| sudo cp /var/cudnn-local-repo-*/cudnn-local-*-keyring.gpg /usr/share/keyrings/ |/|
+|10.6|更新apt。|sudo apt-get update|/|
+|10.7|安装runtime库。| sudo apt-get install libcudnn8=8.6.0.163-1+cuda11.8 |没有安装runtime库, 开发库时，直接运行[](#测试代码)会使得tensorflow报包含"tensorflow coud not find cuda drivers on your machine."内容的错误。|
+|10.8|安装开发库。| sudo apt-get install libcudnn8-dev=8.6.0.163-1+cuda11.8 |/|
+|10.9|安装示例代码。| sudo apt-get install libcudnn8-samples=8.6.0.163-1+cuda11.8 |/|
+|10.10|复制cuDNN示例到一个具有写权限的路径下。| cp -r /usr/src/cudnn_samples_v8/ $HOME |/|
+|10.11|抵达具有写权限的路径下。| cd  $HOME/cudnn_samples_v8/mnistCUDNN |/|
+|10.12|解决引入FreeImage.h的问题。| sudo apt-get install libfreeimage3 libfreeimage-dev |mnistCUDNN示例中引入了FreeImage.h。如果没有安装libfreeimage和libfreeimage-dev会报错“fatel error: FreeImage.h: 没有那个文件或目录”|
+|10.13|编译mnistCUDNN示例。| make clean && make |/|
+|10.14|运行mnistCUDNN示例。| ./mnistCUDNN |如果出现"Test passed！"的信息表示CUDA, cuDNN安装成功。|
+|10.15|查看cudnn的版本| cat /usr/local/cuda-11.8/include/cudnn_version.h | grep CUDNN_MAJOR -A 2 |/|
 |11|安装python库|/|/|
-|11.|修改pip软件源| pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple |修改为清华源。|
-|11.|安装包|tensorflow, pandas, numpy, matplotlib, scikit-learn, networkx, dgl, gensim, xgboost, gym, imageio, pillow, geopy|[python包版本](#environment-parameter)|
+|11.1|修改pip软件源| pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple |修改为清华源。|
+|11.2|安装包|tensorflow, pandas, numpy, matplotlib, scikit-learn, networkx, dgl, gensim, xgboost, gym, imageio, pillow, geopy|[python包版本](#environment-parameter)|
 |12|安装vscode|/|/|
 |12.1|安装所需插件|Jupyter, python, pylance, Chinese, Better Comments, autoDocstring, Excel Viewer, GitHub Theme, Markdow All in One, Markdown PDF, Rainbow CSV, vscode-pdf|/|
-|13|测试代码|/|/|
-||| gpus = tf.config.list_physical_devices(device_type='GPU') ||
-||| cpus = tf.config.list_physical_devices(device_type='CPU') ||
-||| print(gpus, cpus)||
-|||||
-|||||
-
+|13|测试代码|/|[测试代码](#测试代码)|
 
 ## Appends
 
@@ -202,6 +202,7 @@ driver   : xserver-xorg-video-nouveau - distro free builtin
 | 12     | iptables-persistent | 暂时用不到。iptables是一个linux下的防火墙工具，它能帮助我们基于规则进行网络流量控制。                                | [https://zhuanlan.zhihu.com/p/574057147](https://zhuanlan.zhihu.com/p/574057147)                                                   |
 | 13    | psmisc              | 暂时用不到。                                                                                                         | <>                                                                                                                              |
 | 14    | docker-compose      | 暂时用不到。                                                                                                         | <>|
+| 15推荐    | flameshot | 截图工具 | <>|
 
 
 ### CUDA安装过程
@@ -234,29 +235,51 @@ Command 'nvcc' not found, but can be installed with:
 sudo apt install nvidia-cuda-toolkit
 ```
 
-## References
+### 正确安装cudnn的方法
 
-### 关于cuDNN的说明和安装
+中文参考：<https://zhuanlan.zhihu.com/p/633849099>。
+官方参考：cuDNN的安装官方文档进行安装：[NVIDIA cuDNN Documentation的1.3.2部分的内容为ubuntu上使用deb的正确安装方法](https://docs.nvidia.com/deeplearning/cudnn/install-guide/index.html#installlinux-deb)。
+安装libfreeimage3和libfreeimage-dev的原因参考:<https://zhuanlan.zhihu.com/p/376892078>。
 
-来源：<https://zhuanlan.zhihu.com/p/630067986>
+1. 安装
 
-cuDNN（CUDA Deep Neural Network Library）是一个针对深度学习应用优化的加速库，它使用CUDA技术加速深度神经网络的训练和推断。这个库提供了一些高效的原语，例如卷积、池化、归一化等，可以帮助开发人员快速实现深度神经网络，并且提升训练和推断的速度。
+```shell
+sudo dpkg -i cudnn-local-repo-ubuntu2004-8.6.0.163_1.0-1_amd64.deb
+sudo cp /var/cudnn-local-repo-*/cudnn-local-*-keyring.gpg /usr/share/keyrings/
+sudo apt-get update
+sudo apt-get install libcudnn8=8.6.0.163-1+cuda11.8
+sudo apt-get install libcudnn8-dev=8.6.0.163-1+cuda11.8
+sudo apt-get install libcudnn8-samples=8.6.0.163-1+cuda11.8
+```
 
-CUDA和cuDNN是两个相互依赖的软件包，它们之间有以下关系：
+如果只安装cudnn-local-repo-ubuntu2004-8.6.0.163_1.0-1_amd64.deb而不安装libcudnn8=8.6.0.163-1+cuda11.8和libcudnn8-dev=8.6.0.163-1+cuda11.8，tensorflow就会出现下列类似错误。
+```shell
+2023-03-02 12:05:09.463343: I tensorflow/tsl/cuda/cudart_stub.cc:28] Could not find cuda drivers on your machine, GPU will not be used.
+2023-03-02 12:05:09.489911: I tensorflow/tsl/cuda/cudart_stub.cc:28] Could not find cuda drivers on your machine, GPU will not be used.
+2023-03-02 12:05:09.490522: I tensorflow/core/platform/cpu_feature_guard.cc:182] This TensorFlow binary is optimized to use available CPU instructions in performance-critical operations.
+To enable the following instructions: AVX2 FMA, in other operations, rebuild TensorFlow with the appropriate compiler flags.
+2023-03-02 12:05:10.066759: W tensorflow/compiler/tf2tensorrt/utils/py_utils.cc:38] TF-TRT Warning: Could not find TensorRT
 
-- CUDA是必需的：cuDNN需要依赖于CUDA才能够工作。因为cuDNN是使用CUDA技术实现的，所以只有支持CUDA的硬件和系统才能够运行它。在安装cuDNN之前，必须先安装CUDA，并且在环境变量中设置CUDA的路径。
-- cuDNN是可选的：尽管cuDNN可以提升深度学习应用的性能和效率，但它并不是必需的。如果不使用cuDNN，仍然可以使用CUDA进行深度学习计算。cuDNN只是一个可选的加速库，可以根据需要选择是否使用它。
-- cuDNN提供了深度学习相关的API和方法：为了使开发人员更容易地使用cuDNN，这个库提供了一些专门针对深度学习的API和方法，例如卷积、池化、归一化等。这些方法已经被高度优化，可以在支持CUDA的硬件上快速执行。
+Tensorflow version = 2.12.0-dev20230203
 
-总的来说，CUDA提供了基础的GPU并行计算能力，而cuDNN则是在这个基础上为深度学习应用提供的高级的计算加速库。两者结合起来可以大幅提升深度学习应用的性能和效率。
+2023-03-02 12:05:10.748675: I tensorflow/compiler/xla/stream_executor/cuda/cuda_gpu_executor.cc:996] successful NUMA node read from SysFS had negative value (-1), but there must be at least one NUMA node, so returning NUMA node zero. See more at https://github.com/torvalds/linux/blob/v6.0/Documentation/ABI/testing/sysfs-bus-pci#L344-L355
+2023-03-02 12:05:10.771263: W tensorflow/core/common_runtime/gpu/gpu_device.cc:1956] Cannot dlopen some GPU libraries. Please make sure the missing libraries mentioned above are installed properly if you would like to use GPU. Follow the guide at https://www.tensorflow.org/install/gpu for how to download and setup the required libraries for your platform.
+Skipping registering GPU devices...
+```
 
-首先在[https://developer.nvidia.com/cudnn 下载相应版本的cudnn](https://link.zhihu.com/?target=https%3A//developer.nvidia.com/cudnn)。这一步需要注册或者拥有英伟达账号。
+2. 验证
 
-然后，参考 cuDNN 的安装官方文档进行安装：[NVIDIA cuDNN Documentation](https://link.zhihu.com/?target=https%3A//docs.nvidia.com/deeplearning/cudnn/install-guide/index.html%23installlinux-tar)
+官方验证参考：<https://docs.nvidia.com/deeplearning/cudnn/install-guide/index.html#verify>。
 
-> 虽然我是 Ubuntu，但是也按照 "1.3.1. Tar File Installation" 部分的讲解进行操作，而不按照"1.3.2. Debian Local Installation"的部分进行操作。
+```shell
+cp -r /usr/src/cudnn_samples_v8/ $HOME
+cd  $HOME/cudnn_samples_v8/mnistCUDNN
+sudo apt-get install libfreeimage3 libfreeimage-dev
+make clean && make
+./mnistCUDNN
+```
 
-## 测试代码
+### 测试代码
 
 ```python
 import tensorflow as tf
@@ -275,3 +298,28 @@ print(device_lib.list_local_devices())
 import tensorflow as tf
 tf.test.is_gpu_available()
 ```
+
+## References
+
+### 关于cuDNN的说明
+
+来源：<https://zhuanlan.zhihu.com/p/630067986>
+
+cuDNN（CUDA Deep Neural Network Library）是一个针对深度学习应用优化的加速库，它使用CUDA技术加速深度神经网络的训练和推断。这个库提供了一些高效的原语，例如卷积、池化、归一化等，可以帮助开发人员快速实现深度神经网络，并且提升训练和推断的速度。
+
+CUDA和cuDNN是两个相互依赖的软件包，它们之间有以下关系：
+
+- CUDA是必需的：cuDNN需要依赖于CUDA才能够工作。因为cuDNN是使用CUDA技术实现的，所以只有支持CUDA的硬件和系统才能够运行它。在安装cuDNN之前，必须先安装CUDA，并且在环境变量中设置CUDA的路径。
+- cuDNN是可选的：尽管cuDNN可以提升深度学习应用的性能和效率，但它并不是必需的。如果不使用cuDNN，仍然可以使用CUDA进行深度学习计算。cuDNN只是一个可选的加速库，可以根据需要选择是否使用它。
+- cuDNN提供了深度学习相关的API和方法：为了使开发人员更容易地使用cuDNN，这个库提供了一些专门针对深度学习的API和方法，例如卷积、池化、归一化等。这些方法已经被高度优化，可以在支持CUDA的硬件上快速执行。
+
+总的来说，CUDA提供了基础的GPU并行计算能力，而cuDNN则是在这个基础上为深度学习应用提供的高级的计算加速库。两者结合起来可以大幅提升深度学习应用的性能和效率。
+
+首先在[https://developer.nvidia.com/cudnn 下载相应版本的cudnn](https://link.zhihu.com/?target=https%3A//developer.nvidia.com/cudnn)。这一步需要注册或者拥有英伟达账号。
+
+然后，参考 cuDNN 的安装官方文档进行安装：[NVIDIA cuDNN Documentation](https://link.zhihu.com/?target=https%3A//docs.nvidia.com/deeplearning/cudnn/install-guide/index.html%23installlinux-tar)
+
+**错误的**：虽然我是 Ubuntu，但是也按照 "1.3.1. Tar File Installation" 部分的讲解进行操作，而不按照"1.3.2. Debian Local Installation"的部分进行操作。
+
+
+
