@@ -381,3 +381,64 @@ Unix系统把一切资源都看作是文件，包括硬件设备。硬件所形�
     "filename.xz" 表示需要进行匹配的文件名称。其中可以使用通配符。
     xargs 表示的含义还未知。
     rm 表示需要执行的命令是删除。
+
+
+## 调整分辨率
+
+### 调整分辨率
+
+参考调整分辨率:<https://www.cnblogs.com/mohua/p/14871310.html>
+
+1. 首先查看当前分辨率，命令为：
+xrandr或xrandr -q
+输出当前显示屏名称及其分辨率列表，以及其他显示屏及其分辨率列表
+
+2. 如果列出的分辨率有你想要的，那么就直接选择
+xrandr -s 1024x768
+
+3. 如果可选分辨率中没有你想要的大小，那么你需要自定义添加模式，命令为：
+cvt 1920 1080
+回车后返回结果如下，modeline后面就是模式的名称和参数
+1920x108059.96 Hz(CVT 2.07M9) hsync:67.16kHz; pclk: 173.00 MHz Modeline "1920x1080_60.00" 173.00 1920 2048 2248 2576 1080 1083 10881120 -hsync +vsync
+
+4. 可以检查一下是否成功添加
+xrandr 或xrandr -q
+
+5. 将上述创建的的modeline添加到分辨率列表
+newmode后面的内容就是第三步中modeline后面的内容
+sudo xrandr --newmode "1920x1080_60.00" 173.00 1920 2048 2248 2576 1080 1083 1088 1120 -hsync +vsync
+
+**在这一个步报错:"xrandr: Failed to get size of gamma for output default"**。
+
+6. 将分辨率添加到你的显示器上
+sudo xrandr --addmode Virtual1 "1920x1080_60.00"
+Virtual1可以替换为你的显示器名称，"1920x1080_60.00"为上一步添加的分辨率
+
+7. 在界面中可以查看到分辨率确实已经更改
+
+8. 为保证重启后也能生效，最好配置下系统设置（虽然我做完了8-10步，重启之后依然会变成配置之前的样子）
+sudo gedit /etc/profile
+
+9. 打开配置文件后，后面加入
+xrandr --newmode "1920x1080_60.00" 173.00 1920 2048 2248 2576 1080 1083 1088 1120 -hsync +vsync
+xrandr --addmode Virtual1 "1920x1080_60.00"
+
+10. 重启系统
+reboot
+
+### 解决调整分辨率的报错
+
+参考解决调整分辨率的报错:<https://blog.csdn.net/hanxirensheng/article/details/98584995>
+
+有效：
+
+ubuntu 20.04 安装后分辨率只有一个选项640x480，使用xrandr命令出现错误：xrandr: Failed to get size of gamma for output default，使用cvt命令也无法设置，修改xorg.conf也没用。
+
+解决办法：
+
+打开：/etc/default/grub
+搜索：#GRUB_GFXMODE=640x480
+编辑：640x480改成你想要的分辨率，并取消前面的#
+例如：GRUB_GFXMODE=1920x1080
+更新：sudo update-grub
+reboot

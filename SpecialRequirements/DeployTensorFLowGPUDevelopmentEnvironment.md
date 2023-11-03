@@ -33,6 +33,7 @@
 |imageio||图片处理|
 |pillow||图片处理|
 |gym||强化学习环境|
+|geopy||地图|
 
 更新时间20231009：
 
@@ -325,9 +326,8 @@ Linux下CPU版对应关系：
     sudo chmod a+r /usr/local/cuda-11.2/lib64/libcudnn*
     ```
 
-    注意11.8对应的cudnn安装方式与上面不同：
+    这种方式没有效果，或者说有问题。注意11.8对应的cudnn安装方式与上面不同：
     <https://wenku.csdn.net/answer/m9ufwmpcnr>
-
     <https://blog.csdn.net/h3c4lenovo/article/details/119003405>
 
     7. 查看cudnn的版本
