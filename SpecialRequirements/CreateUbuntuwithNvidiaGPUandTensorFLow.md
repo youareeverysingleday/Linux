@@ -106,6 +106,7 @@
 |12|安装vscode|/|/|
 |12.1|安装所需插件|Jupyter, python, pylance, Chinese, Better Comments, autoDocstring, Excel Viewer, GitHub Theme, Markdow All in One, Markdown PDF, Rainbow CSV, vscode-pdf|/|
 |13|测试代码|/|[测试代码](#测试代码)|
+|13.1|选择python运行环境|/|使用usr/bin/python3下的编译环境。|
 
 ## Appends
 
