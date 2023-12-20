@@ -14,17 +14,17 @@
 | CUDA       | 11.8      | 受限于ubuntu, python版本。                   |
 | cuDNN      | 8.6       | 受限于ubuntu, python版本                     |
 | DGL        | 1.1.2     | 限制了python, tensorflow版本。               |
-| numpy      |           |                                             |
+| numpy      | 1.23.5    | tensorflow 2.12.0的版本要求numpy<1.24。      |
 | pandas     |           | 限制numpy版本。                             |
 | matplotlib |           | 可视化, 限制numpy版本。                             |
-| scikit-learn |           | 机器学习框架                          |
-| xgboost    |           | xgboost框                                |
-| networkx   |           | 复杂网络                                 |
-|gensim||小型机器学习模型库|
-|imageio||图片处理|
-|pillow||图片处理|
-|gym||强化学习环境|
-|geopy||地图|
+| scikit-learn |         | 机器学习框架。                        |
+| xgboost    |           | xgboost框。                            |
+| networkx   |           | 复杂网络。                                 |
+| gensim     |           | 小型机器学习模型库。|
+| imageio    |           | 图片处理。|
+| pillow     | 10.1.0    | 图片处理。imageio要求pillow>=7.0.0；所以直接使用了最新的版本。|
+| gym        |           | 强化学习环境。|
+| geopy      |           | 地图相关数据处理。|
 
 ## Step
 
@@ -66,15 +66,15 @@
 |6.3|查看可以安装的nvidia驱动版本| ubuntu-drivers devices |[查看可以安装的nvidia驱动版本回显](#查看可以安装的nvidia驱动版本)。|
 |6.4|安装驱动源| sudo add-apt-repository ppa:graphics-drivers/ppa |/|
 |6.5|更新驱动源| sudo apt update |/|
-|6.6|安装驱动| apt install nvidia-driver-470 |注意没有安装驱动和安装驱动之后的不同点在于：1. 没有安装驱动之前"Software & Updates"中"Additional Drivers"是无法看到具体可供选择安装的驱动版本的，只有最下面一个Proprietary...内容（不含驱动版本信息）被选中，其他选项均为灰色。安装驱动之后就可以看到可以选择具体安装的驱动版本了，并且已经选中recommended的驱动版本。2. 运行nvidia-smi显示的内容不同。没有安装驱动之前显示的内容虽然也是一个表格，但是无法看到明显的细节信息。安装驱动之后的显示的信息包含了NVIDIA-SMI, Driver Version, CUDA Version版本信息的表头了。显示内容的细致程度明显不一样。|
+|6.6|安装驱动| apt install nvidia-driver-470 |注意没有安装驱动和安装驱动之后的不同点在于：1. 没有安装驱动之前"Software & Updates"中"Additional Drivers"是无法看到具体可供选择安装的驱动版本的，只有最下面一个Proprietary...内容（不含驱动版本信息）被选中，其他选项均为灰色。安装驱动之后就可以看到可以选择具体安装的驱动版本了，并且已经选中recommended的驱动版本。2. 运行nvidia-smi显示的内容不同。没有安装驱动之前显示的内容虽然也是一个表格，但是无法看到明显的细节信息。安装驱动之后的显示的信息包含了NVIDIA-SMI, Driver Version, CUDA Version版本信息的表头了。显示内容的细致程度明显不一样。另外，如果使用当前显卡作为显示输出，那么不能安装server版本的驱动，如果安装了server版本则ubuntu图形化界面无法启动了。|
 |6.7|重启| reboot |/|
 |7|安装ubuntu必备软件|/|/|
 |7.1|安装必备软件| apt install ipykernel openssh-server net-tools python3-pip vsftpd sysstat wget timeshift |[必备软件说明](#安装必备软件71)。注意ipykernel必须安装的，不然在vscode中的jupyter无法运行。|
 |8|安装CUDA|/|/|
 |8.1|查看ubuntu下CPU的架构| uname -m |x86_64架构。|
 |8.2|选择CUDA版本|下载地址[https://developer.nvidia.com/cuda-toolkit-archive](https://developer.nvidia.com/cuda-toolkit-archive)|[对应的版本](#environment-parameter)|
-|8.3|下载| sudo wget https://developer.download.nvidia.com/compute/cuda/11.8.0/local_installers/cuda_11.8.0_520.61.05_linux.run|下载。|
-|8.4|安装| sudo sh cuda_11.8.0_520.61.05_linux.run|[CUDA安装过程](#cuda安装过程)。|
+|8.3|下载| sudo wget https://developer.download.nvidia.com/compute/cuda/11.8.0/local_installers/cuda_11.8.0_520.61.05_linux.run|下载。[需要说明的是会出现2种错误](#CUDA安装中常出现的2种报错) |
+|8.4|安装| sudo sh cuda_11.8.0_520.61.05_linux.run|[CUDA安装过程](#cuda安装过程)。可以使用--tmpdir=[temporaryPath]来指定解压目录。实际使用中是因为步骤8.3下载的.run文件失败，导致解压失败的。正常情况下是不会用到tmpdir参数。参考命令为sh --tmpdir=/workspace/ cuda_11.8.0_520.61.05_linux.run 。|
 |8.5|查看CUDA安装情况| nvidia-smi |安装之前显示的CUDA版本是11.4，安装之后CUDA的版本为11.8。在没有安装成功cuda_11.8.0_520.61.05_linux.run的现象是/usr/local目录下是没有包含cuda名字的文件夹的。|
 |9|配置CUDA环境变量|/|/|
 |9.1|打开.bashrc文件|gedit ~/.bashrc |打开~/.bashrc文件。注意：当前环境中处于/home/[Account]目录下的.bashrc文件和~/.bashrc文件的内容并不一样。修改的是~/.bashrc文件。|
@@ -99,12 +99,12 @@
 |10.12|解决引入FreeImage.h的问题。| sudo apt-get install libfreeimage3 libfreeimage-dev |mnistCUDNN示例中引入了FreeImage.h。如果没有安装libfreeimage和libfreeimage-dev会报错“fatel error: FreeImage.h: 没有那个文件或目录”|
 |10.13|编译mnistCUDNN示例。| make clean && make |/|
 |10.14|运行mnistCUDNN示例。| ./mnistCUDNN |如果出现"Test passed！"的信息表示CUDA, cuDNN安装成功。|
-|10.15|查看cudnn的版本| cat /usr/local/cuda-11.8/include/cudnn_version.h | grep CUDNN_MAJOR -A 2 |/|
+|10.15|查看cudnn的版本| cat /usr/local/cuda-11.8/include/cudnn_version.h | 显示内容：grep CUDNN_MAJOR -A 2 。另外在安装新的Nvidia GPU时，可能包含该文件。|/|
 |11|安装python库|/|/|
 |11.1|修改pip软件源| pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple |修改为清华源。|
-|11.2|安装包|tensorflow, pandas, numpy, matplotlib, scikit-learn, networkx, dgl, gensim, xgboost, gym, imageio, pillow, geopy|[python包版本](#environment-parameter)|
+|11.2|安装包|pip install tensorflow==2.12.0 pandas numpy==1.23.5 matplotlib scikit-learn networkx dgl gensim xgboost gym imageio pillow==10.1.0 geopy|[python包版本](#environment-parameter)|
 |12|安装vscode|/|/|
-|12.1|安装所需插件|Jupyter, python, pylance, Chinese, Better Comments, autoDocstring, Excel Viewer, GitHub Theme, Markdow All in One, Markdown PDF, Rainbow CSV, vscode-pdf|/|
+|12.1|安装所需插件|Jupyter, python, pylance, Chinese, Better Comments, autoDocstring, Excel Viewer, GitHub Theme, Markdown All in One, Markdown PDF, Rainbow CSV, vscode-pdf|/|
 |13|测试代码|/|[测试代码](#测试代码)|
 |13.1|选择python运行环境|/|使用usr/bin/python3下的编译环境。|
 
@@ -184,6 +184,8 @@ driver   : nvidia-driver-450-server - distro non-free
 driver   : xserver-xorg-video-nouveau - distro free builtin
 ```
 
+![驱动版本后缀说明](../pictures/NvidiaGPUDriverDescription.png '驱动版本后缀说明')
+
 
 ### 安装必备软件7.1
 
@@ -235,6 +237,32 @@ Build cuda_11.8.r11.8/compiler.31833905_0
 Command 'nvcc' not found, but can be installed with: 
 sudo apt install nvidia-cuda-toolkit
 ```
+
+### CUDA安装中常出现的2种报错
+
+1. 下载到99%出现报错。
+   ```log
+   download CUDA report ERROR:cuda_11.8.0_520.61.05_linux.run   99%[=======================================================> ]   4.04G  5.49MB/s    剩余 1s    s段错误 (核心已转储)
+   ```
+   使用wget的断电续传功能和增加stacksize都无法解决该问题。
+   **使用firefox下载完整的然后再安装可以解决**。
+2. 当下载.run文件无法成功的情况下，尝试过使用deb的方式来安装CUDA。最终使用nvidia-smi时会显示报错。
+   ```log
+   Etraction failed.
+   Signal caught, cleaning up Installation failed.
+   See log at /var/log/cuda-installer.log for details.
+   ```
+   不清楚具体原因是什么。但是在使用timeshift恢复之后使用.run方式安装成功。
+   下面的安装命令只做记录，不要使用。
+   ```shell
+   wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/x86_64/cuda-ubuntu2004.pin
+   sudo mv cuda-ubuntu2004.pin /etc/apt/preferences.d/cuda-repository-pin-600w
+   get https://developer.download.nvidia.com/compute/cuda/11.8.0/local_installers/cuda-repo-ubuntu2004-11-8-local_11.8.0-520.61.05-1_amd64.deb
+   sudo dpkg -i cuda-repo-ubuntu2004-11-8-local_11.8.0-520.61.05-1_amd64.deb
+   sudo cp /var/cuda-repo-ubuntu2004-11-8-local/cuda-*-keyring.gpg /usr/share/keyrings/
+   sudo apt-get update
+   sudo apt-get -y install cuda
+   ```
 
 ### 正确安装cudnn的方法
 
@@ -321,6 +349,99 @@ CUDA和cuDNN是两个相互依赖的软件包，它们之间有以下关系：
 然后，参考 cuDNN 的安装官方文档进行安装：[NVIDIA cuDNN Documentation](https://link.zhihu.com/?target=https%3A//docs.nvidia.com/deeplearning/cudnn/install-guide/index.html%23installlinux-tar)
 
 **错误的**：虽然我是 Ubuntu，但是也按照 "1.3.1. Tar File Installation" 部分的讲解进行操作，而不按照"1.3.2. Debian Local Installation"的部分进行操作。
+
+### GPU环境搭建命令操作快速手册
+
+1. cd /etc/apt
+2. cp sources.list sources.list.backup
+3. gedit sources.list
+4. https://mirrors.tuna.tsinghua.edu.cn/help/ubuntu/
+   ```shell
+   # 默认注释了源码镜像以提高 apt update 速度，如有需要可自行取消注释
+   deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal main restricted universe multiverse
+   # deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal main restricted universe multiverse
+   deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-updates main restricted universe multiverse
+   # deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-updates main restricted universe multiverse
+   deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-backports main restricted universe multiverse
+   # deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-backports main restricted universe multiverse
+
+   deb http://security.ubuntu.com/ubuntu/ focal-security main restricted universe multiverse
+   # deb-src http://security.ubuntu.com/ubuntu/ focal-security main restricted universe multiverse
+
+   # 预发布软件源，不建议启用
+   deb https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-proposed main restricted universe multiverse
+   # deb-src https://mirrors.tuna.tsinghua.edu.cn/ubuntu/ focal-proposed main restricted universe multiverse
+   ```
+5. apt update
+6. apt upgrade
+7. cd /
+8. mkdir workspace
+9. fdisk -l
+10. lsblk
+11. mkfs.ext4 /dev/sdb
+12. mount /dev/sdb /workspace
+13. df -h
+14. gedit /etc/fstab
+15. /dev/sdb /workspace ext4 defaults 0 1
+16. reboot
+17. apt install timeshift openssh-server net-tools python3-pip sysstat wget
+
+--- install nvidia driver.
+
+18. lspci | grep -i nvidia
+19. nvidia-smi
+20. add-apt-repository ppa:graphics-drivers/ppa
+21. apt-get update
+22. ubuntu-drivers devices
+23. apt install nvidia-driver-545
+	apt install nvidia-driver-535-server-open
+	don't install server version. because install server version at once, system will not start.
+24. reboot
+
+---
+install CUDA.
+
+25. https://developer.nvidia.com/cuda-toolkit-archive
+26. wget https://developer.download.nvidia.com/compute/cuda/11.8.0/local_installers/cuda_11.8.0_520.61.05_linux.run	
+27. sh cuda_11.8.0_520.61.05_linux.run
+28. nvidia-smi
+
+--- 
+install cuDNN.
+
+29. gedit ~/.bashrc
+30. export PATH=$PATH:/usr/local/cuda-11.8/bin
+	export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/cuda-11.8/lib64
+	export LIBRARY_PATH=$LIBRARY_PATH:/usr/local/cuda-11.8/lib64
+	export CUDA_HOME=$CUDA_HOME:/usr/local/cuda-11.8
+31. source ~/.bashrc
+32. nvcc -V
+33. https://developer.nvidia.com/rdp/cudnn-archive
+34. https://developer.download.nvidia.cn/compute/cudnn/secure/8.6.0/local_installers/11.8/cudnn-local-repo-ubuntu2004-8.6.0.163_1.0-1_amd64.deb
+35. sudo dpkg -i cudnn-local-repo-ubuntu2004-8.6.0.163_1.0-1_amd64.deb
+36. sudo cp /var/cudnn-local-repo-*/cudnn-local-*-keyring.gpg /usr/share/keyrings/
+37. sudo apt-get update
+40. sudo apt-get install libcudnn8=8.6.0.163-1+cuda11.8
+41. sudo apt-get install libcudnn8-dev=8.6.0.163-1+cuda11.8
+42. sudo apt-get install libcudnn8-samples=8.6.0.163-1+cuda11.8
+43. cp -r /usr/src/cudnn_samples_v8/ $HOME
+44. cd  $HOME/cudnn_samples_v8/mnistCUDNN
+45. sudo apt-get install libfreeimage3 libfreeimage-dev
+46. make clean && make
+47. ./mnistCUDNN
+48. cat /usr/local/cuda-11.8/include/cudnn_version.h 
+
+---
+install python packages.
+
+49. pip config set global.index-url https://pypi.tuna.tsinghua.edu.cn/simple
+50. pip install tensorflow==2.12.0 pandas numpy==1.23.5 matplotlib scikit-learn networkx dgl gensim xgboost gym imageio pillow==10.1.0 geopy
+
+---
+install vscode extensions.
+
+51. Jupyter, python, pylance, Chinese, Better Comments, autoDocstring, Excel Viewer, GitHub Theme, Markdow All in One, Markdown PDF, Rainbow CSV, vscode-pdf
+
 
 
 
