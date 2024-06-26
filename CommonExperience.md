@@ -22,6 +22,68 @@
    1. reference:<https://zhuanlan.zhihu.com/p/529892064>。
    2. 注意的地方：安装了输入法之后需要重启一次才能看到。
 
+
+## 查看进程被killed的原因
+   
+### 参考
+1. <https://blog.csdn.net/Castlehe/article/details/122936585>
+
+### 常见原因
+
+当系统资源不足时，Linux 内核也可以决定终止一个或多个进程。 一个非常常见的例子是内存不足 (OOM) killer，会在系统的物理内存耗尽时触发。
+
+- 当内存不足时，内核会将相关信息记录到内核日志缓冲区中，该缓冲区可通过 /dev/kmsg 获得。
+- 有几个工具/脚本/命令 可以更轻松地从该虚拟设备读取数据，其中最常见的是 dmesg 和 journalctl。
+
+### 查看日志
+
+使用sudo dmesg | tail -7命令（任意目录下，不需要进入log目录，这应该是最简单的一种）
+
+可以看到：
+
+- oom-kill之后，就是解释那个被killed的程序的pid和uid
+- Out of memory: Killed process 1138439 (python3) total-vm:8117956kB, anon-rss:5649844kB，内存不够
+   - total_vm：总共使用的虚拟内存 Virtual memory use (in 4 kB pages)
+      8117956/1024(得到MB)/1024(得到GB)=7.741GB
+   - rss：常驻内存使用Resident memory use (in 4 kB pages)
+      5649844/1024/1024=5.388GB
+
+dmesg输出信息说明：
+|参数|解释|
+|---|---|
+|pid|进程ID|
+|uid|用户ID|
+|tgid|线程组ID|
+|total_vm|总共使用的虚拟内存 Virtual memory use (in 4 kB pages)|
+|rss|常驻内存使用Resident memory use (in 4 kB pages)|
+|nr_ptes|页表实体Page table entries|
+|swapents|页表实体Page table entries|
+|oom_score_adj|通常为 0。较小的数字表示在调用 OOM 杀手时进程不太可能死亡。（oom会优先kill分数高的进程，分数高表示占用内存资源多）|
+
+其他几种方式，如下：
+
+1. 
+```shell
+journalctl --list-boots |
+awk ‘{ print $1 }’ |
+xargs -I{} journalctl --utc --no-pager -b {} -kqg ‘killed process’ -o verbose --output-fields=MESSAGE
+```
+
+2. 
+
+```shell
+journalctl -xb | egrep -i 'killed process’
+```
+3. 
+```shell
+sudo dmesg | egrep -i -B100 'killed process'
+```
+其中-B100，表示 'killed process’之前的100行内容
+
+重点关注其中最后两列：oom_score_adj和name
+- 可以看到，有些服务常驻内存，所以占了不少内存，考虑清理出去。
+- 同时killed之后，似乎有些内存，不会从内存中自动释放。需要手动释放。
+
 ## Ubuntu system backup and restore
 
 使用timeshift进行备份和还原。参考<https://linuxconfig.org/ubuntu-20-04-system-backup-and-restore>。这个参考非常详细，步骤也非常明确。
